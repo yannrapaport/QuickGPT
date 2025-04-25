@@ -72,16 +72,20 @@ app.post('/api/chat', async (req, res) => {
     const apiKey = process.env.OPENAI_API_KEY;
     console.log('API Key available:', apiKey ? 'Yes (masked)' : 'No');
     
-    if (apiKey) {
+    if (apiKey && apiKey.startsWith('sk-')) {
       try {
         // Initialize the OpenAI client with the API key and improved settings
-        console.log('Creating OpenAI client with API key...');
+        console.log('Creating OpenAI client with valid API key format...');
         const openai = new OpenAI({
           apiKey: apiKey,
-          timeout: 30000, // 30 seconds timeout
-          maxRetries: 2,  // Retry twice on failures
+          timeout: 60000, // 60 seconds timeout
+          maxRetries: 3,  // Retry 3 times on failures
           defaultHeaders: {
             'User-Agent': 'ReplitChatApp/1.0.0'
+          },
+          defaultQuery: {
+            // Add safety check for repeated requests
+            user: 'replit-chat-app'
           }
         });
         

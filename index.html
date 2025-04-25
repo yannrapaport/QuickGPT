@@ -768,17 +768,41 @@
                     
                     // Try the API first, but have a fallback ready
                     try {
-                        // Create a proper messages array for the API
+                        // Create a proper messages array for the API - include conversation history
+                        // Get existing messages from the chat
+                        const chatMsgs = document.querySelectorAll('.message');
                         const messagesForAPI = [];
+                        
+                        // Build conversation history
+                        chatMsgs.forEach(messageDiv => {
+                            const userMsg = messageDiv.querySelector('.user-message');
+                            const systemMsg = messageDiv.querySelector('.system-message');
+                            
+                            if (userMsg && userMsg.textContent) {
+                                messagesForAPI.push({ role: 'user', content: userMsg.textContent });
+                            } else if (systemMsg && systemMsg.id !== 'loading-message') {
+                                // Get plain text content
+                                const content = systemMsg.textContent || '';
+                                if (content) {
+                                    messagesForAPI.push({ role: 'assistant', content: content });
+                                }
+                            }
+                        });
+                        
+                        // Add current question if not already included
                         if (currentQuestion) {
-                            messagesForAPI.push({ role: 'user', content: currentQuestion });
+                            // Check if current question is not the last user message
+                            const lastUserMsg = messagesForAPI.filter(m => m.role === 'user').pop();
+                            if (!lastUserMsg || lastUserMsg.content !== currentQuestion) {
+                                messagesForAPI.push({ role: 'user', content: currentQuestion });
+                            }
                         }
                         
                         console.log('Sending API request with messages:', messagesForAPI);
                         
-                        // API call with timeout (10 seconds)
+                        // API call with timeout (15 seconds)
                         const controller = new AbortController();
-                        const timeoutId = setTimeout(() => controller.abort(), 10000);
+                        const timeoutId = setTimeout(() => controller.abort(), 15000);
                         
                         // Make API call to the server
                         const response = await fetch('/api/chat', {
@@ -818,7 +842,8 @@
                         continueSection.style.display = 'block';
                     }
                     catch (apiError) {
-                        console.warn("API error, using client-side fallback instead:", apiError);
+                        console.error("API error details:", apiError);
+                        console.warn("API error, using client-side fallback instead:", apiError.message);
                         
                         // Fallback to local responses if API fails
                         let response;
