@@ -467,27 +467,28 @@
         /* Drawer style continue section */
         .continue-section {
             position: absolute;
-            top: calc(100% + 16px); /* Position below the separator line with spacing */
+            top: 100%; /* Position right at the bottom of its parent */
             left: 50%;
-            transform: translateX(-50%) translateY(-100%); /* Center horizontally and hidden */
-            width: 100%;
+            transform: translateX(-50%); /* Center horizontally */
+            width: calc(100% - 48px); /* Account for parent padding */
             max-width: 800px; /* Maximum width */
-            height: auto;
             background-color: var(--chat-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             z-index: 1000;
             padding: 16px 20px;
-            transition: transform 0.3s ease, opacity 0.3s ease;
+            margin-top: 16px; /* Add space between separator and drawer */
+            transition: opacity 0.3s ease;
             opacity: 0;
+            pointer-events: none; /* Prevents clicks when hidden */
             overflow: hidden;
             box-sizing: border-box;
         }
         
         .continue-section.visible {
-            transform: translateX(-50%) translateY(0);
             opacity: 1;
+            pointer-events: auto; /* Re-enable clicks when visible */
         }
         
         .drawer-header {
@@ -750,33 +751,36 @@
             </div>
         </div>
         
-        <!-- Separator line that glows when a conversation is in progress -->
-        <div class="separator-line" id="separatorLine">
-            <div class="separator-chip">
-                <div class="triangle-up"></div>
+        <!-- Container for separator line and drawer to maintain proper positioning -->
+        <div class="separator-container" style="position: relative; width: 100%;">
+            <!-- Separator line that glows when a conversation is in progress -->
+            <div class="separator-line" id="separatorLine">
+                <div class="separator-chip">
+                    <div class="triangle-up"></div>
+                </div>
             </div>
-        </div>
-        
-        <!-- Drawer-style continue section -->
-        <div class="continue-section" id="continueSection" style="display: none;">
-            <div class="drawer-header">
-                <button class="quit-btn" id="quitBtn" title="Close">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-                <div class="drawer-title">Continue in ChatGPT</div>
-                <button class="clip-btn" id="clipBtn" title="Copy to clipboard">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                    </svg>
-                </button>
-            </div>
-            <div class="prompt-preview-container">
-                <textarea class="prompt-preview" id="promptPreview" placeholder="Conversation summary for ChatGPT..." spellcheck="false"></textarea>
-                <div class="copy-notification" id="copyNotification">✓ Copied to clipboard</div>
+            
+            <!-- Drawer-style continue section -->
+            <div class="continue-section" id="continueSection" style="display: none;">
+                <div class="drawer-header">
+                    <button class="quit-btn" id="quitBtn" title="Close">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                    <div class="drawer-title">Continue in ChatGPT</div>
+                    <button class="clip-btn" id="clipBtn" title="Copy to clipboard">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                    </button>
+                </div>
+                <div class="prompt-preview-container">
+                    <textarea class="prompt-preview" id="promptPreview" placeholder="Conversation summary for ChatGPT..." spellcheck="false"></textarea>
+                    <div class="copy-notification" id="copyNotification">✓ Copied to clipboard</div>
+                </div>
             </div>
         </div>
         
@@ -1062,9 +1066,19 @@
             separatorLine.addEventListener('click', function() {
                 console.log('Separator line clicked');
                 console.log('Is active:', separatorLine.classList.contains('active'));
+                
+                // Debug check if elements exist
+                console.log('Separator exists:', !!separatorLine);
+                console.log('Drawer exists:', !!continueSection);
+                
                 if (separatorLine.classList.contains('active')) {
                     console.log('Attempting to show drawer');
-                    toggleContinueDrawer(true);
+                    // Make sure continueSection is properly initialized
+                    if (continueSection) {
+                        toggleContinueDrawer(true);
+                    } else {
+                        console.error('continueSection element not found');
+                    }
                 }
             });
             
@@ -1072,30 +1086,28 @@
             function toggleContinueDrawer(show) {
                 console.log('Toggle drawer called with show:', show);
                 if (show) {
-                    // Display the continue section first (but still invisible due to opacity 0)
-                    console.log('Setting display to block');
+                    // First ensure the element is in the DOM with display block
                     continueSection.style.display = 'block';
+                    console.log('Set continueSection display to block');
                     
-                    // Generate the prompt
-                    console.log('Checking prompt content');
+                    // Generate the prompt content if needed
                     if (promptPreview.value.trim() === '') {
                         console.log('Generating prompt content');
                         generateChatGPTPrompt();
                     }
                     
-                    // Wait a tiny bit for the browser to register display:block
-                    console.log('Setting timeout for visibility');
-                    setTimeout(() => {
-                        // Then add the visible class to animate in
-                        console.log('Adding visible class');
-                        continueSection.classList.add('visible');
-                    }, 10);
+                    // Force a reflow before adding the visible class
+                    void continueSection.offsetHeight;
+                    
+                    // Make the drawer visible with animation
+                    console.log('Adding visible class to animate in');
+                    continueSection.classList.add('visible');
                 } else {
-                    // Remove the visible class to animate out
-                    console.log('Removing visible class');
+                    // Hide with animation
+                    console.log('Removing visible class to animate out');
                     continueSection.classList.remove('visible');
                     
-                    // Wait for animation to complete before hiding
+                    // Remove from DOM after animation completes
                     setTimeout(() => {
                         console.log('Setting display to none');
                         continueSection.style.display = 'none';
