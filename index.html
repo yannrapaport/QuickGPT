@@ -1137,13 +1137,13 @@
                 // Clear all messages
                 chatMessages.innerHTML = '';
                 
-                // Hide quick answers, more options button and continue section
+                // Hide quick answers and deactivate separator line
                 quickAnswers.style.display = 'none';
-                toggleMoreOptionsButton(false);
-                continueSection.style.display = 'none';
+                toggleSeparatorLine(false);
                 
-                // Reset more options button state
-                moreOptionsBtn.classList.remove('active');
+                // Hide drawer
+                continueSection.classList.remove('visible');
+                continueSection.style.display = 'none';
                 
                 // Reset prompt preview content
                 promptPreview.value = '';
