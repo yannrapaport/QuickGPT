@@ -371,7 +371,13 @@
             
             // Generate prompt for continuing in ChatGPT
             function generateChatGPTPrompt() {
-                const prompt = `Human: ${currentQuestion}\n\nAssistant: ${currentResponse}\n\nHuman: `;
+                // Extract the main topic from the conversation
+                const topicMatch = currentQuestion.match(/\b\w+(?:\s+\w+){0,5}\b/i);
+                const topic = topicMatch ? topicMatch[0] : "this topic";
+                
+                // Create a summarized prompt for ChatGPT
+                const prompt = `I was just having a conversation about ${topic}. My question was about "${currentQuestion}" and I received this response: "${currentResponse}". I'd like to continue this conversation and get more insights. Can you help me explore this topic further?`;
+                
                 promptPreview.textContent = prompt;
             }
         });
