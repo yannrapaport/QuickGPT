@@ -28,13 +28,13 @@ async function generateQuickAnswers(response, openai) {
     
     console.log('Generating quick answer suggestions...');
     
-    // Use a cheaper, faster model for generating quick answers
+    // Use gpt-4o-mini for generating quick answers in the same language as the conversation
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // Use cheaper model for suggestions
+      model: "gpt-4o-mini", // Using gpt-4o-mini for better quality and language matching
       messages: [
         {
           role: "system", 
-          content: "Generate 3 short follow-up questions or statements that a user might want to respond with based on this assistant message. Format as JSON array with each suggestion being 2-5 words maximum. The suggestions should be diverse and cover different directions the conversation could go."
+          content: "Generate 3 short follow-up questions or statements that a user might want to respond with based on this assistant message. The suggestions should be in the SAME LANGUAGE as the assistant's message. Format your response as a simple JSON object with a 'suggestions' array containing 3 short strings. Each suggestion should be 2-5 words. The suggestions should be diverse and cover different directions the conversation could go."
         },
         {
           role: "user",
@@ -50,23 +50,83 @@ async function generateQuickAnswers(response, openai) {
     console.log('Generated quick answer suggestions:', result);
     
     try {
+      // Try to parse JSON from the result
       const parsed = JSON.parse(result);
+      
+      // Check for suggestions array format
       if (parsed.suggestions && Array.isArray(parsed.suggestions) && parsed.suggestions.length > 0) {
         return parsed.suggestions.slice(0, 3); // Ensure we have max 3 suggestions
       }
+      
+      // Alternative: If there's no suggestions array but there are other arrays in the response
+      const firstArrayKey = Object.keys(parsed).find(key => Array.isArray(parsed[key]) && parsed[key].length > 0);
+      if (firstArrayKey) {
+        return parsed[firstArrayKey].slice(0, 3);
+      }
+      
+      // If we have any string array, use it
+      if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'string') {
+        return parsed.slice(0, 3);
+      }
+      
     } catch (parseError) {
       console.error('Error parsing quick answer suggestions:', parseError);
+      
+      // Try to extract suggestions using regex as fallback
+      try {
+        const suggestionMatches = result.match(/"([^"]+)"/g);
+        if (suggestionMatches && suggestionMatches.length >= 3) {
+          return suggestionMatches.slice(0, 3).map(s => s.replace(/"/g, ''));
+        }
+      } catch (regexError) {
+        console.error('Regex extraction failed:', regexError);
+      }
     }
     
-    return getDefaultQuickAnswers();
+    // Use language-aware default answers based on the assistant's response
+    return getDefaultQuickAnswers(response);
   } catch (error) {
     console.error('Error generating quick answers:', error);
-    return getDefaultQuickAnswers();
+    return getDefaultQuickAnswers(response);
   }
 }
 
 // Default quick answers when generation fails
-function getDefaultQuickAnswers() {
+function getDefaultQuickAnswers(response) {
+  // Try to detect if the response is not in English
+  if (response) {
+    // Check for French
+    if (/[àáâäæçèéêëìíîïòóôöùúûüÿ]/i.test(response) || 
+        /(\bje\b|\bet\b|\ble\b|\bla\b|\bles\b|\bun\b|\bune\b|\bou\b|\bpour\b|\bce\b|\bcette\b|\bces\b)/i.test(response)) {
+      return [
+        "Dis-m'en plus",
+        "Pourquoi ?",
+        "Un exemple ?"
+      ];
+    }
+    
+    // Check for Spanish
+    if (/[áéíóúüñ¿¡]/i.test(response) || 
+        /(\bel\b|\bla\b|\blos\b|\blas\b|\by\b|\bo\b|\bpor\b|\bpara\b|\bque\b|\bcomo\b|\bpuedo\b)/i.test(response)) {
+      return [
+        "Cuéntame más",
+        "¿Por qué?",
+        "¿Un ejemplo?"
+      ];
+    }
+    
+    // Check for German
+    if (/[äöüß]/i.test(response) || 
+        /(\bund\b|\bder\b|\bdie\b|\bdas\b|\bein\b|\beine\b|\bzu\b|\bmit\b|\bfür\b|\bist\b|\bsind\b)/i.test(response)) {
+      return [
+        "Mehr Details",
+        "Warum?",
+        "Ein Beispiel?"
+      ];
+    }
+  }
+  
+  // Default to English
   return [
     "Tell me more",
     "Why is that?",
@@ -212,7 +272,7 @@ app.post('/api/chat', async (req, res) => {
         role: 'assistant', 
         content: simulatedResponse 
       },
-      quickAnswers: getDefaultQuickAnswers()
+      quickAnswers: getDefaultQuickAnswers(simulatedResponse)
     });
     
   } catch (error) {
