@@ -430,13 +430,45 @@
             box-shadow: 0 0 8px var(--primary-color);
             height: 2px;
         }
+        
+        /* Chip with upward triangle for easier clicking */
+        .separator-chip {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--separator-color);
+            border-radius: 12px;
+            padding: 3px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .separator-chip .triangle-up {
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-bottom: 8px solid var(--text-color);
+        }
+        
+        .separator-line.active .separator-chip {
+            background-color: var(--primary-color);
+            opacity: 1;
+            pointer-events: auto;
+        }
 
         /* Drawer style continue section */
         .continue-section {
-            position: fixed;
+            position: absolute;
             bottom: 0;
             left: 0;
-            right: 0;
+            width: 100%;
             background-color: var(--chat-bg);
             border-top: 1px solid var(--border-color);
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
@@ -715,7 +747,11 @@
         </div>
         
         <!-- Separator line that glows when a conversation is in progress -->
-        <div class="separator-line" id="separatorLine"></div>
+        <div class="separator-line" id="separatorLine">
+            <div class="separator-chip">
+                <div class="triangle-up"></div>
+            </div>
+        </div>
         
         <!-- Drawer-style continue section -->
         <div class="continue-section" id="continueSection" style="display: none;">
