@@ -125,15 +125,30 @@
             background-color: var(--button-hover);
         }
 
+        .prompt-preview-container {
+            margin-top: 16px;
+            display: none;
+        }
+        
+        .prompt-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
         .prompt-preview {
             background-color: #f5f5f5;
             border: 1px solid var(--border-color);
             border-radius: 6px;
             padding: 12px;
-            margin-top: 16px;
-            max-height: 120px;
+            max-height: 200px;
             overflow-y: auto;
-            display: none;
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #333;
         }
 
         .copy-notification {
@@ -242,8 +257,11 @@
         </div>
         
         <div class="continue-section" id="continueSection" style="display: none;">
-            <button class="continue-btn" id="continueBtn">Continue in ChatGPT</button>
-            <div class="prompt-preview" id="promptPreview"></div>
+            <button class="continue-btn" id="continueBtn">Generate ChatGPT Continuation Prompt</button>
+            <div class="prompt-preview-container">
+                <div class="prompt-title">Continuation Prompt (Copied to Clipboard):</div>
+                <div class="prompt-preview" id="promptPreview"></div>
+            </div>
             <div class="copy-notification" id="copyNotification">✓ Automatically copied to clipboard</div>
             <button class="copy-btn" id="copyBtn">Copy Again</button>
         </div>
@@ -303,7 +321,7 @@
             // Continue in ChatGPT button
             continueBtn.addEventListener('click', function() {
                 generateChatGPTPrompt();
-                promptPreview.style.display = 'block';
+                document.querySelector('.prompt-preview-container').style.display = 'block';
                 copyBtn.style.display = 'block';
                 
                 // Automatically copy to clipboard
@@ -399,12 +417,35 @@
             
             // Generate prompt for continuing in ChatGPT
             function generateChatGPTPrompt() {
-                // Extract the main topic from the conversation
-                const topicMatch = currentQuestion.match(/\b\w+(?:\s+\w+){0,5}\b/i);
-                const topic = topicMatch ? topicMatch[0] : "this topic";
+                // Get all conversation messages
+                const messages = document.querySelectorAll('.message');
+                let conversationHistory = [];
                 
-                // Create a summarized prompt for ChatGPT
-                const prompt = `I was just having a conversation about ${topic}. My question was about "${currentQuestion}" and I received this response: "${currentResponse}". I'd like to continue this conversation and get more insights. Can you help me explore this topic further?`;
+                // Extract message content from each message div
+                messages.forEach(messageDiv => {
+                    const userMessage = messageDiv.querySelector('.user-message');
+                    const systemMessage = messageDiv.querySelector('.system-message');
+                    
+                    if (userMessage) {
+                        conversationHistory.push({role: 'user', content: userMessage.textContent});
+                    } else if (systemMessage) {
+                        conversationHistory.push({role: 'assistant', content: systemMessage.textContent});
+                    }
+                });
+                
+                // Create a comprehensive prompt for ChatGPT
+                let prompt = `I want to continue this conversation in a new ChatGPT session. Here's the conversation so far:\n\n`;
+                
+                // Format conversation history
+                conversationHistory.forEach(msg => {
+                    prompt += `${msg.role === 'user' ? 'Me' : 'Assistant'}: ${msg.content}\n\n`;
+                });
+                
+                // Add instructions for continuation
+                prompt += `Please continue this conversation where we left off, keeping in mind the context and topic we were discussing. You should respond as if you are the assistant in this conversation.\n\n`;
+                
+                // Add next steps instructions
+                prompt += `When you respond, please take into account the entire conversation history above. Your next response should be a direct continuation of this conversation, as if we never stopped talking. You don't need to remind me of what we were discussing.`;
                 
                 promptPreview.textContent = prompt;
             }
