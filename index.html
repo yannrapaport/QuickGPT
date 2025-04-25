@@ -142,13 +142,21 @@
             border: 1px solid var(--border-color);
             border-radius: 6px;
             padding: 12px;
-            max-height: 200px;
-            overflow-y: auto;
+            height: 200px;
+            width: 100%;
+            resize: vertical;
             font-family: monospace;
             white-space: pre-wrap;
             font-size: 13px;
             line-height: 1.5;
             color: #333;
+            outline: none;
+            box-sizing: border-box;
+        }
+        
+        .prompt-preview:focus {
+            border-color: var(--primary-color);
+            background-color: #fcfcfc;
         }
 
         .copy-notification {
@@ -259,8 +267,8 @@
         <div class="continue-section" id="continueSection" style="display: none;">
             <button class="continue-btn" id="continueBtn">Generate ChatGPT Continuation Prompt</button>
             <div class="prompt-preview-container">
-                <div class="prompt-title">Continuation Prompt (Copied to Clipboard):</div>
-                <div class="prompt-preview" id="promptPreview"></div>
+                <div class="prompt-title">Continuation Prompt (Editable):</div>
+                <textarea class="prompt-preview" id="promptPreview" spellcheck="false"></textarea>
             </div>
             <div class="copy-notification" id="copyNotification">✓ Automatically copied to clipboard</div>
             <button class="copy-btn" id="copyBtn">Copy Again</button>
@@ -325,7 +333,7 @@
                 copyBtn.style.display = 'block';
                 
                 // Automatically copy to clipboard
-                const text = promptPreview.textContent;
+                const text = promptPreview.value;
                 navigator.clipboard.writeText(text)
                     .then(() => {
                         // Show notification
@@ -345,7 +353,7 @@
             
             // Copy to clipboard button (as a fallback)
             copyBtn.addEventListener('click', function() {
-                const text = promptPreview.textContent;
+                const text = promptPreview.value;
                 navigator.clipboard.writeText(text)
                     .then(() => {
                         copyBtn.textContent = 'Copied!';
@@ -447,7 +455,7 @@
                 // Add next steps instructions
                 prompt += `When you respond, please take into account the entire conversation history above. Your next response should be a direct continuation of this conversation, as if we never stopped talking. You don't need to remind me of what we were discussing.`;
                 
-                promptPreview.textContent = prompt;
+                promptPreview.value = prompt;
             }
         });
     </script>
