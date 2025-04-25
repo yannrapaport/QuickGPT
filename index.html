@@ -136,6 +136,14 @@
             display: none;
         }
 
+        .copy-notification {
+            color: #10a37f;
+            font-size: 12px;
+            margin-top: 6px;
+            display: none;
+            font-weight: 500;
+        }
+
         .copy-btn {
             background-color: #e0e0e0;
             border: none;
@@ -236,7 +244,8 @@
         <div class="continue-section" id="continueSection" style="display: none;">
             <button class="continue-btn" id="continueBtn">Continue in ChatGPT</button>
             <div class="prompt-preview" id="promptPreview"></div>
-            <button class="copy-btn" id="copyBtn">Copy to Clipboard</button>
+            <div class="copy-notification" id="copyNotification">✓ Automatically copied to clipboard</div>
+            <button class="copy-btn" id="copyBtn">Copy Again</button>
         </div>
         
         <div class="input-container">
@@ -259,6 +268,7 @@
             const continueBtn = document.getElementById('continueBtn');
             const promptPreview = document.getElementById('promptPreview');
             const copyBtn = document.getElementById('copyBtn');
+            const copyNotification = document.getElementById('copyNotification');
             
             let currentQuestion = '';
             let currentResponse = '';
@@ -295,16 +305,34 @@
                 generateChatGPTPrompt();
                 promptPreview.style.display = 'block';
                 copyBtn.style.display = 'block';
+                
+                // Automatically copy to clipboard
+                const text = promptPreview.textContent;
+                navigator.clipboard.writeText(text)
+                    .then(() => {
+                        // Show notification
+                        copyNotification.style.display = 'block';
+                        copyBtn.textContent = 'Copied!';
+                        
+                        setTimeout(() => {
+                            copyBtn.textContent = 'Copy Again';
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy: ', err);
+                        // If copy fails, don't show the notification
+                        copyNotification.style.display = 'none';
+                    });
             });
             
-            // Copy to clipboard button
+            // Copy to clipboard button (as a fallback)
             copyBtn.addEventListener('click', function() {
                 const text = promptPreview.textContent;
                 navigator.clipboard.writeText(text)
                     .then(() => {
                         copyBtn.textContent = 'Copied!';
                         setTimeout(() => {
-                            copyBtn.textContent = 'Copy to Clipboard';
+                            copyBtn.textContent = 'Copy Again';
                         }, 2000);
                     })
                     .catch(err => {
