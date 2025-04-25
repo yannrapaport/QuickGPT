@@ -12,6 +12,8 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "openai": "^4.96.0"
+    "openai": "^4.96.0",
+    "sharp": "^0.34.1",
+    "svg-to-png": "^4.0.0"
   }
 }
