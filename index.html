@@ -6,26 +6,32 @@
     <title>Chat Simulator</title>
     <style>
         :root {
-            --primary-color: #10a37f;
-            --background-color: #f7f7f8;
+            --primary-color: #007bff;
+            --primary-light: #e8f0fe;
+            --background-color: #f6f7f9;
             --chat-bg: #ffffff;
-            --text-color: #333333;
-            --border-color: #e0e0e0;
-            --button-hover: #0c8c6e;
+            --text-color: #3c4043;
+            --text-secondary: #5f6368;
+            --border-color: #e6e8eb;
+            --button-hover: #0069d9;
             --input-bg: #ffffff;
+            --timestamp-color: #9aa0a6;
+            --system-color: #202124;
+            --user-color: #1a73e8;
+            --separator-color: #eaecef;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
 
         body {
             background-color: var(--background-color);
             color: var(--text-color);
-            line-height: 1.6;
+            line-height: 1.5;
             padding: 20px;
             display: flex;
             justify-content: center;
@@ -34,51 +40,88 @@
 
         .chat-container {
             background-color: var(--chat-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
             width: 100%;
-            max-width: 600px;
+            max-width: 700px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            height: 85vh;
         }
 
         .chat-header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 16px;
-            text-align: center;
-            font-weight: 600;
+            background-color: var(--chat-bg);
+            color: var(--text-color);
+            padding: 16px 20px;
+            font-weight: 500;
+            font-size: 16px;
+            border-bottom: 1px solid var(--separator-color);
         }
 
         .chat-messages {
-            padding: 20px;
+            padding: 24px;
             flex-grow: 1;
             overflow-y: auto;
-            max-height: 400px;
+            background-color: var(--chat-bg);
         }
 
         .message {
-            margin-bottom: 20px;
+            margin-bottom: 28px;
             animation: fadeIn 0.3s ease-in;
+            position: relative;
+        }
+
+        .message-content {
+            max-width: 85%;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .message-sender {
+            font-weight: 500;
+            font-size: 14px;
+            margin-right: 8px;
+        }
+
+        .message-time {
+            color: var(--timestamp-color);
+            font-size: 12px;
+        }
+
+        .user-message-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .system-message-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
         .user-message {
-            background-color: #f0f7ff;
-            border-radius: 12px 12px 0 12px;
+            background-color: var(--primary-light);
+            color: var(--text-color);
+            border-radius: 8px;
             padding: 12px 16px;
-            margin-left: 24px;
             position: relative;
-            border-left: 3px solid #3b82f6;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
         .system-message {
-            background-color: #f0f0f0;
-            border-radius: 12px 12px 12px 0;
+            background-color: var(--chat-bg);
+            color: var(--text-color);
+            border-radius: 8px;
             padding: 12px 16px;
-            margin-right: 24px;
             position: relative;
-            border-left: 3px solid #64748b;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border-color);
             line-height: 1.5;
             font-size: 14.5px;
         }
@@ -92,9 +135,9 @@
         }
         
         #loading-message {
-            background-color: #f0f0f0;
-            border-left: 3px solid #10a37f;
+            background-color: var(--chat-bg);
             animation: pulse 1.5s infinite;
+            border: 1px solid var(--border-color);
         }
         
         @keyframes pulse {
@@ -103,44 +146,52 @@
             100% { opacity: 0.6; }
         }
 
+        .message-body {
+            font-size: 14.5px;
+            line-height: 1.5;
+        }
+
         .quick-answers {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
             margin-top: 16px;
             margin-bottom: 16px;
-            padding: 0 20px;
+            padding: 0 24px;
         }
 
         .quick-answer-btn {
-            background-color: #f0f0f0;
-            border: none;
+            background-color: var(--chat-bg);
+            border: 1px solid var(--border-color);
             border-radius: 16px;
-            padding: 8px 16px;
-            font-size: 14px;
+            padding: 6px 14px;
+            font-size: 13px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
+            color: var(--text-color);
         }
 
         .quick-answer-btn:hover {
-            background-color: #e0e0e0;
+            background-color: var(--primary-light);
+            border-color: var(--primary-color);
         }
 
         .continue-section {
-            padding: 16px 20px;
-            border-top: 1px solid var(--border-color);
+            padding: 16px 24px;
+            border-top: 1px solid var(--separator-color);
         }
 
         .continue-btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 6px;
-            padding: 10px 16px;
-            font-size: 14px;
-            width: 100%;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
             cursor: pointer;
             transition: background-color 0.2s;
+            height: 36px;
         }
 
         .continue-btn:hover {
@@ -153,36 +204,34 @@
         }
         
         .prompt-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             margin-bottom: 8px;
-            color: #333;
+            color: var(--text-secondary);
         }
         
         .prompt-preview {
-            background-color: #f5f5f5;
+            background-color: var(--input-bg);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 4px;
             padding: 12px;
             height: 200px;
             width: 100%;
             resize: vertical;
-            font-family: monospace;
+            font-family: 'SF Mono', Menlo, Monaco, Consolas, monospace;
             white-space: pre-wrap;
             font-size: 13px;
             line-height: 1.5;
-            color: #333;
+            color: var(--text-color);
             outline: none;
-            box-sizing: border-box;
         }
         
         .prompt-preview:focus {
             border-color: var(--primary-color);
-            background-color: #fcfcfc;
         }
 
         .copy-notification {
-            color: #10a37f;
+            color: var(--primary-color);
             font-size: 12px;
             margin-top: 6px;
             display: none;
@@ -190,52 +239,79 @@
         }
 
         .copy-btn {
-            background-color: #e0e0e0;
-            border: none;
+            background-color: var(--background-color);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             padding: 6px 12px;
             margin-top: 8px;
             font-size: 12px;
             cursor: pointer;
             display: none;
+            transition: all 0.2s;
         }
 
         .copy-btn:hover {
-            background-color: #d0d0d0;
+            background-color: var(--primary-light);
+            border-color: var(--primary-color);
+        }
+
+        .controls-container {
+            display: flex;
+            padding: 16px 24px;
+            border-top: 1px solid var(--separator-color);
+            background-color: var(--chat-bg);
+            align-items: flex-end;
         }
 
         .input-container {
             display: flex;
-            padding: 16px;
-            border-top: 1px solid var(--border-color);
-            background-color: white;
+            flex-direction: column;
+            flex-grow: 1;
         }
 
         .message-input {
-            flex-grow: 1;
-            padding: 12px;
+            width: 100%;
+            padding: 12px 14px;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 4px;
             resize: none;
             font-size: 14px;
-            height: 60px;
+            min-height: 44px;
+            max-height: 150px;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
+            background-color: var(--input-bg);
         }
 
         .message-input:focus {
             border-color: var(--primary-color);
+            box-shadow: 0 0 0 1px var(--primary-light);
+        }
+        
+        .button-container {
+            margin-left: 12px;
+            display: flex;
+            align-items: center;
         }
 
         .send-btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 6px;
-            padding: 0 16px;
-            margin-left: 8px;
+            border-radius: 4px;
+            padding: 0;
+            width: 36px;
+            height: 36px;
             cursor: pointer;
             transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-btn svg {
+            width: 18px;
+            height: 18px;
         }
 
         .send-btn:hover {
@@ -243,12 +319,12 @@
         }
 
         .send-btn:disabled {
-            background-color: #cccccc;
+            background-color: var(--border-color);
             cursor: not-allowed;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -261,23 +337,23 @@
                 padding: 15px;
             }
             
-            .input-container {
+            .controls-container {
                 padding: 12px;
-            }
-            
-            .message-input {
-                padding: 10px;
             }
             
             .quick-answers {
                 padding: 0 15px;
+            }
+            
+            .chat-container {
+                height: 95vh;
             }
         }
     </style>
 </head>
 <body>
     <div class="chat-container">
-        <div class="chat-header">Chat Simulator</div>
+        <div class="chat-header">AI Chat with Continue in ChatGPT</div>
         <div class="chat-messages" id="chatMessages"></div>
         
         <div class="quick-answers" id="quickAnswers" style="display: none;">
@@ -287,22 +363,36 @@
         </div>
         
         <div class="continue-section" id="continueSection" style="display: none;">
-            <button class="continue-btn" id="continueBtn">Generate ChatGPT Continuation Prompt</button>
+            <button class="continue-btn" id="continueBtn">
+                Continue in ChatGPT
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: -3px;">
+                    <path d="M5 12h14M12 5l7 7-7 7"></path>
+                </svg>
+            </button>
             <div class="prompt-preview-container">
                 <div class="prompt-title">Continuation Prompt (Editable):</div>
                 <textarea class="prompt-preview" id="promptPreview" spellcheck="false"></textarea>
             </div>
-            <div class="copy-notification" id="copyNotification">✓ Automatically copied to clipboard</div>
+            <div class="copy-notification" id="copyNotification">✓ Copied to clipboard</div>
             <button class="copy-btn" id="copyBtn">Copy Again</button>
         </div>
         
-        <div class="input-container">
-            <textarea 
-                class="message-input" 
-                id="messageInput" 
-                placeholder="Type your question here..."
-                rows="2"></textarea>
-            <button class="send-btn" id="sendBtn">Send</button>
+        <div class="controls-container">
+            <div class="input-container">
+                <textarea 
+                    class="message-input" 
+                    id="messageInput" 
+                    placeholder="Type your message here..."
+                    rows="1"></textarea>
+            </div>
+            <div class="button-container">
+                <button class="send-btn" id="sendBtn" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -401,23 +491,57 @@
                 messageInput.focus();
             }
             
+            // Get formatted timestamp
+            function getFormattedTime() {
+                const now = new Date();
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                const formattedHours = hours % 12 || 12;
+                const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+                return `${formattedHours}:${formattedMinutes} ${ampm}`;
+            }
+            
             // Add user message to chat
             function addUserMessage(message) {
                 currentQuestion = message;
                 
                 const messageElement = document.createElement('div');
-                messageElement.className = 'message';
+                messageElement.className = 'message user-message-container';
                 
-                const userMessageElement = document.createElement('div');
-                userMessageElement.className = 'user-message';
-                userMessageElement.textContent = message;
+                // Create message content wrapper
+                const messageContent = document.createElement('div');
+                messageContent.className = 'message-content';
                 
-                messageElement.appendChild(userMessageElement);
+                // Create message header with sender and time
+                const messageHeader = document.createElement('div');
+                messageHeader.className = 'message-header';
+                
+                const messageSender = document.createElement('div');
+                messageSender.className = 'message-sender';
+                messageSender.textContent = 'Me';
+                
+                const messageTime = document.createElement('div');
+                messageTime.className = 'message-time';
+                messageTime.textContent = getFormattedTime();
+                
+                messageHeader.appendChild(messageSender);
+                messageHeader.appendChild(messageTime);
+                
+                // Create message body
+                const messageBody = document.createElement('div');
+                messageBody.className = 'message-body user-message';
+                messageBody.textContent = message;
+                
+                // Assemble the message
+                messageContent.appendChild(messageHeader);
+                messageContent.appendChild(messageBody);
+                messageElement.appendChild(messageContent);
+                
                 chatMessages.appendChild(messageElement);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
             
-            // Add system response to chat
             // Function to format message text with better readability
             function formatMessageText(text) {
                 if (!text) return '';
@@ -441,15 +565,39 @@
                 currentResponse = message;
                 
                 const messageElement = document.createElement('div');
-                messageElement.className = 'message';
+                messageElement.className = 'message system-message-container';
                 
-                const systemMessageElement = document.createElement('div');
-                systemMessageElement.className = 'system-message';
+                // Create message content wrapper
+                const messageContent = document.createElement('div');
+                messageContent.className = 'message-content';
+                
+                // Create message header with sender and time
+                const messageHeader = document.createElement('div');
+                messageHeader.className = 'message-header';
+                
+                const messageSender = document.createElement('div');
+                messageSender.className = 'message-sender';
+                messageSender.textContent = 'Assistant';
+                
+                const messageTime = document.createElement('div');
+                messageTime.className = 'message-time';
+                messageTime.textContent = getFormattedTime();
+                
+                messageHeader.appendChild(messageSender);
+                messageHeader.appendChild(messageTime);
+                
+                // Create message body
+                const messageBody = document.createElement('div');
+                messageBody.className = 'message-body system-message';
                 
                 // Use innerHTML to allow for formatted content
-                systemMessageElement.innerHTML = formatMessageText(message);
+                messageBody.innerHTML = formatMessageText(message);
                 
-                messageElement.appendChild(systemMessageElement);
+                // Assemble the message
+                messageContent.appendChild(messageHeader);
+                messageContent.appendChild(messageBody);
+                messageElement.appendChild(messageContent);
+                
                 chatMessages.appendChild(messageElement);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
                 
@@ -464,14 +612,38 @@
                     // Show a loading indicator
                     const loadingMessage = "Thinking...";
                     const loadingElement = document.createElement('div');
-                    loadingElement.className = 'message';
+                    loadingElement.className = 'message system-message-container';
                     
+                    // Create message content wrapper
+                    const messageContent = document.createElement('div');
+                    messageContent.className = 'message-content';
+                    
+                    // Create message header with sender and time
+                    const messageHeader = document.createElement('div');
+                    messageHeader.className = 'message-header';
+                    
+                    const messageSender = document.createElement('div');
+                    messageSender.className = 'message-sender';
+                    messageSender.textContent = 'Assistant';
+                    
+                    const messageTime = document.createElement('div');
+                    messageTime.className = 'message-time';
+                    messageTime.textContent = getFormattedTime();
+                    
+                    messageHeader.appendChild(messageSender);
+                    messageHeader.appendChild(messageTime);
+                    
+                    // Create message body
                     const loadingMessageElement = document.createElement('div');
-                    loadingMessageElement.className = 'system-message';
+                    loadingMessageElement.className = 'message-body system-message';
                     loadingMessageElement.textContent = loadingMessage;
                     loadingMessageElement.id = 'loading-message';
                     
-                    loadingElement.appendChild(loadingMessageElement);
+                    // Assemble the message
+                    messageContent.appendChild(messageHeader);
+                    messageContent.appendChild(loadingMessageElement);
+                    loadingElement.appendChild(messageContent);
+                    
                     chatMessages.appendChild(loadingElement);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                     
