@@ -337,21 +337,23 @@
             background-color: var(--user-bubble-bg);
             color: var(--text-color);
             border-radius: 18px;
-            padding: 12px 16px;
+            padding: 9px 14px;
             position: relative;
             box-shadow: none;
+            font-size: 14px;
+            line-height: 18px;
         }
 
         .system-message {
             background-color: var(--system-bubble-bg);
             color: var(--text-color);
             border-radius: 18px;
-            padding: 12px 16px;
+            padding: 9px 14px;
             position: relative;
             box-shadow: none;
             border: 1px solid var(--border-color);
             line-height: 1.5;
-            font-size: 14.5px;
+            font-size: 14px;
         }
         
         .system-message strong {
@@ -412,16 +414,67 @@
             border-color: var(--primary-color);
         }
         
-        .more-options-btn {
+        /* Separator line that glows blue when conversation has started */
+        .separator-line {
+            height: 1px;
+            width: 100%;
+            background-color: var(--separator-color);
+            margin: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .separator-line.active {
             background-color: var(--primary-color);
-            color: var(--primary-text);
+            box-shadow: 0 0 8px var(--primary-color);
+            height: 2px;
+        }
+
+        /* Drawer style continue section */
+        .continue-section {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--chat-bg);
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 16px 24px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform: translateY(100%); /* Default hidden below screen */
+            opacity: 0;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .continue-section.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .drawer-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .quit-btn {
+            background-color: transparent;
+            color: var(--text-color);
             border: none;
-            border-radius: 18px;
-            height: 36px;
-            min-width: 36px;
-            padding: 0 12px;
-            font-size: 13px;
-            font-weight: 700;
+            border-radius: 50%;
+            padding: 0;
+            width: 32px;
+            height: 32px;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
@@ -429,18 +482,13 @@
             justify-content: center;
         }
         
-        .more-options-btn:hover {
-            background-color: var(--primary-hover);
+        .quit-btn svg {
+            width: 16px;
+            height: 16px;
         }
         
-        .more-options-btn.active {
-            background-color: var(--primary-hover);
-        }
-
-        .continue-section {
-            padding: 16px 24px;
-            border-top: none;
-            margin-bottom: 16px;
+        .quit-btn:hover {
+            background-color: var(--border-color);
         }
 
         .prompt-preview-container {
@@ -452,9 +500,9 @@
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
             border-radius: 18px;
-            padding: 12px 12px 42px 12px; /* Extra padding at bottom for clip button */
+            padding: 12px 14px;
             min-height: 120px;
-            max-height: 200px;
+            max-height: 50vh;
             width: 100%;
             resize: vertical;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -468,15 +516,6 @@
         .prompt-preview:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 1px var(--primary-light);
-        }
-        
-        .prompt-actions {
-            position: absolute;
-            bottom: 8px;
-            right: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .clip-btn {
@@ -512,7 +551,12 @@
             font-weight: 500;
             display: none;
             opacity: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             transition: opacity 0.3s ease-in-out;
+            z-index: 10;
         }
 
         .controls-container {
@@ -668,23 +712,31 @@
             <div class="quick-answers" id="quickAnswers" style="display: none;">
                 <!-- Quick answer buttons will be dynamically inserted here -->
             </div>
-            <button class="more-options-btn" id="moreOptionsBtn" style="display: none;" title="Continue in ChatGPT">
-                <span>...</span>
-            </button>
         </div>
         
+        <!-- Separator line that glows when a conversation is in progress -->
+        <div class="separator-line" id="separatorLine"></div>
+        
+        <!-- Drawer-style continue section -->
         <div class="continue-section" id="continueSection" style="display: none;">
+            <div class="drawer-header">
+                <button class="quit-btn" id="quitBtn" title="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+                <div class="drawer-title">Continue in ChatGPT</div>
+                <button class="clip-btn" id="clipBtn" title="Copy to clipboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    </svg>
+                </button>
+            </div>
             <div class="prompt-preview-container">
                 <textarea class="prompt-preview" id="promptPreview" placeholder="Conversation summary for ChatGPT..." spellcheck="false"></textarea>
-                <div class="prompt-actions">
-                    <div class="copy-notification" id="copyNotification">✓ Copied to clipboard</div>
-                    <button class="clip-btn" id="clipBtn" title="Copy to clipboard">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                        </svg>
-                    </button>
-                </div>
+                <div class="copy-notification" id="copyNotification">✓ Copied to clipboard</div>
             </div>
         </div>
         
@@ -714,10 +766,11 @@
             const chatMessages = document.getElementById('chatMessages');
             const quickAnswers = document.getElementById('quickAnswers');
             const continueSection = document.getElementById('continueSection');
-            const moreOptionsBtn = document.getElementById('moreOptionsBtn');
+            const separatorLine = document.getElementById('separatorLine');
             const promptPreview = document.getElementById('promptPreview');
             const copyNotification = document.getElementById('copyNotification');
             const clipBtn = document.getElementById('clipBtn');
+            const quitBtn = document.getElementById('quitBtn');
             const resetBtn = document.getElementById('resetBtn');
             const modelSelect = document.getElementById('modelSelect');
             const themeSelect = document.getElementById('themeSelect');
@@ -956,36 +1009,52 @@
                 copyNotification.style.opacity = '0';
             });
             
-            // Show/hide more options button when quick answers appear/disappear
-            function toggleMoreOptionsButton(show) {
+            // Toggle the visibility of the separator line when conversation starts
+            function toggleSeparatorLine(show) {
                 if (show) {
-                    moreOptionsBtn.style.display = 'flex';
+                    separatorLine.classList.add('active');
                 } else {
-                    moreOptionsBtn.style.display = 'none';
-                    // Also hide the continue section if the more button is hidden
-                    continueSection.style.display = 'none';
-                    moreOptionsBtn.classList.remove('active');
+                    separatorLine.classList.remove('active');
                 }
             }
             
-            // More options button click handler (toggle continue section)
-            moreOptionsBtn.addEventListener('click', function() {
-                const isContinueSectionVisible = continueSection.style.display === 'block';
-                
-                if (isContinueSectionVisible) {
-                    // Hide continue section
-                    continueSection.style.display = 'none';
-                    this.classList.remove('active');
-                } else {
-                    // Show continue section and generate prompt
+            // Separator line click handler to show drawer
+            separatorLine.addEventListener('click', function() {
+                if (separatorLine.classList.contains('active')) {
+                    toggleContinueDrawer(true);
+                }
+            });
+            
+            // Toggle the continue drawer visibility
+            function toggleContinueDrawer(show) {
+                if (show) {
+                    // Display the continue section first (but still invisible due to opacity 0)
                     continueSection.style.display = 'block';
-                    this.classList.add('active');
                     
-                    // Only generate if the text area is empty
+                    // Generate the prompt
                     if (promptPreview.value.trim() === '') {
                         generateChatGPTPrompt();
                     }
+                    
+                    // Wait a tiny bit for the browser to register display:block
+                    setTimeout(() => {
+                        // Then add the visible class to animate in
+                        continueSection.classList.add('visible');
+                    }, 10);
+                } else {
+                    // Remove the visible class to animate out
+                    continueSection.classList.remove('visible');
+                    
+                    // Wait for animation to complete before hiding
+                    setTimeout(() => {
+                        continueSection.style.display = 'none';
+                    }, 300); // Match transition duration
                 }
+            }
+            
+            // Quit button click handler
+            quitBtn.addEventListener('click', function() {
+                toggleContinueDrawer(false);
             });
             
             // Clip button click handler
@@ -1002,16 +1071,18 @@
                         void copyNotification.offsetWidth;
                         copyNotification.style.opacity = '1';
                         
-                        // Fade out notification after 2 seconds
+                        // Close the drawer after a short delay
                         setTimeout(() => {
-                            copyNotification.style.opacity = '0';
-                            // Hide completely after fade-out animation completes
+                            toggleContinueDrawer(false);
+                            
+                            // Reset notification after drawer is closed
                             setTimeout(() => {
-                                if (copyNotification.style.opacity === '0') {
+                                copyNotification.style.opacity = '0';
+                                setTimeout(() => {
                                     copyNotification.style.display = 'none';
-                                }
-                            }, 300); // Match the transition duration
-                        }, 2000);
+                                }, 300);
+                            }, 500);
+                        }, 1000);
                     })
                     .catch(err => {
                         console.error('Failed to copy: ', err);
@@ -1208,11 +1279,11 @@
                 chatMessages.appendChild(messageElement);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
                 
-                // Show quick answers and the "..." button
+                // Show quick answers and activate the separator line
                 quickAnswers.style.display = 'flex';
-                toggleMoreOptionsButton(true);
+                toggleSeparatorLine(true);
                 
-                // Hide continue section by default until "..." is clicked
+                // Hide continue drawer by default until separator is clicked
                 continueSection.style.display = 'none';
             }
             
