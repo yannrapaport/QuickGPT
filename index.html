@@ -199,11 +199,10 @@
         }
         
         .header-center {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
+            flex: 1;
             display: flex;
-            align-items: center;
+            justify-content: flex-start;
+            margin-left: 20px;
         }
         
         .header-controls {
@@ -229,11 +228,8 @@
         .reset-btn {
             background-color: var(--primary-color);
             color: var(--primary-text);
-            border-radius: 18px;
-            padding: 0 12px;
-            font-size: 13px;
-            font-weight: 500;
-            width: auto;
+            border-radius: 50%;
+            width: 36px;
             height: 36px;
         }
         
@@ -613,6 +609,7 @@
         .message-input {
             width: 100%;
             padding: 9px 14px;
+            padding-right: 40px; /* Space for the send button */
             border: 1px solid var(--border-color);
             border-radius: 18px;
             resize: none;
@@ -631,8 +628,16 @@
             box-shadow: 0 0 0 1px var(--primary-light);
         }
         
+        .input-container {
+            position: relative; /* For positioning the send button */
+            width: 100%;
+        }
+        
         .button-container {
-            margin-left: 12px;
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
             display: flex;
             align-items: center;
         }
@@ -643,8 +648,8 @@
             border: none;
             border-radius: 50%;
             padding: 0;
-            width: 36px;
-            height: 36px;
+            width: 30px;
+            height: 30px;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
@@ -708,21 +713,27 @@
             </div>
             
             <div class="header-center">
-                <button class="reset-btn" id="resetBtn">Reset chat</button>
+                <!-- Empty center section -->
             </div>
             
             <div class="header-controls">
+                <button class="reset-btn" id="resetBtn" title="Reset chat">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 1 18 0 9 9 0 0 1-18 0z"></path>
+                        <path d="M9 12L9 9.33A.67.67 0 0 1 10.5 9.33V12"></path>
+                        <path d="M13 12a1 1 0 1 0 2 0 1 1 0 0 0-2 0z"></path>
+                        <path d="M12 16L7 12 12 8"></path>
+                    </svg>
+                </button>
+                
                 <button id="themeToggleBtn" class="control-btn theme-btn" title="Toggle between themes">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <path d="M12 1v2"></path>
-                        <path d="M12 21v2"></path>
-                        <path d="M4.22 4.22l1.42 1.42"></path>
-                        <path d="M18.36 18.36l1.42 1.42"></path>
-                        <path d="M1 12h2"></path>
-                        <path d="M21 12h2"></path>
-                        <path d="M4.22 19.78l1.42-1.42"></path>
-                        <path d="M18.36 5.64l1.42-1.42"></path>
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <line x1="12" y1="4" x2="12" y2="2"></line>
+                        <line x1="12" y1="22" x2="12" y2="20"></line>
+                        <line x1="20" y1="12" x2="22" y2="12"></line>
+                        <line x1="2" y1="12" x2="4" y2="12"></line>
                     </svg>
                 </button>
                 
