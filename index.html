@@ -6,6 +6,7 @@
     <title>QuickGPT</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
+        /* Default Light Theme */
         :root {
             --primary-color: #b3d8ff; /* Pastel blue for primary elements */
             --primary-light: #e9f3ff; /* Lighter pastel blue for backgrounds */
@@ -21,6 +22,98 @@
             --user-bubble-bg: #e9f3ff; /* Light pastel blue for user messages */
             --system-bubble-bg: #ffffff; /* White for system messages */
             --separator-color: #f0f1f2; /* Very light gray for separators */
+            --header-text: #4a4a4a; /* Header text color */
+            --header-bg: #ffffff; /* Header background color */
+            --dropdown-bg: rgba(0, 0, 0, 0.1); /* Dropdown background */
+            --dropdown-text: #4a4a4a; /* Dropdown text color */
+        }
+        
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --primary-color: #4a6b8a; /* Dark blue for primary elements */
+            --primary-light: #2c3e50; /* Darker blue for backgrounds */
+            --primary-text: #e1e8f0; /* Light gray for buttons and text */
+            --primary-hover: #5a7b9a; /* Slightly lighter blue for hover states */
+            --background-color: #121212; /* Very dark gray background */
+            --chat-bg: #1e1e1e; /* Dark gray chat background */
+            --text-color: #f0f0f0; /* Off-white for text */
+            --text-secondary: #b0b0b0; /* Light gray for secondary text */
+            --border-color: #333333; /* Dark gray for borders */
+            --input-bg: #2a2a2a; /* Darker gray input background */
+            --timestamp-color: #9fa6b0; /* Muted gray for timestamps */
+            --user-bubble-bg: #2c3e50; /* Dark blue for user messages */
+            --system-bubble-bg: #2a2a2a; /* Dark gray for system messages */
+            --separator-color: #333333; /* Dark gray for separators */
+            --header-text: #f0f0f0; /* Header text color */
+            --header-bg: #1e1e1e; /* Header background color */
+            --dropdown-bg: rgba(255, 255, 255, 0.1); /* Dropdown background */
+            --dropdown-text: #f0f0f0; /* Dropdown text color */
+        }
+        
+        /* Pastel Blue Theme (current default) */
+        [data-theme="pastel"] {
+            --primary-color: #b3d8ff; /* Pastel blue for primary elements */
+            --primary-light: #e9f3ff; /* Lighter pastel blue for backgrounds */
+            --primary-text: #4e5b6d; /* Muted blue-gray for buttons and text */
+            --primary-hover: #a1cfff; /* Slightly darker pastel blue for hover states */
+            --background-color: #f7f9fc; /* Very light blue-gray background */
+            --chat-bg: #ffffff; /* White chat background */
+            --text-color: #4a4a4a; /* Dark gray for text */
+            --text-secondary: #888888; /* Medium gray for secondary text */
+            --border-color: #e8e8e8; /* Light gray for borders */
+            --input-bg: #ffffff; /* White input background */
+            --timestamp-color: #9fa6b0; /* Muted gray for timestamps */
+            --user-bubble-bg: #e9f3ff; /* Light pastel blue for user messages */
+            --system-bubble-bg: #ffffff; /* White for system messages */
+            --separator-color: #f0f1f2; /* Very light gray for separators */
+            --header-text: #4a4a4a; /* Header text color */
+            --header-bg: #ffffff; /* Header background color */
+            --dropdown-bg: rgba(0, 0, 0, 0.1); /* Dropdown background */
+            --dropdown-text: #4a4a4a; /* Dropdown text color */
+        }
+        
+        /* Forest Green Theme */
+        [data-theme="forest"] {
+            --primary-color: #7fc682; /* Forest green for primary elements */
+            --primary-light: #e3f2e3; /* Light mint green for backgrounds */
+            --primary-text: #2c502e; /* Dark green for buttons and text */
+            --primary-hover: #6cb46f; /* Slightly darker green for hover states */
+            --background-color: #f5f9f5; /* Very light mint background */
+            --chat-bg: #ffffff; /* White chat background */
+            --text-color: #445444; /* Dark green-gray for text */
+            --text-secondary: #889988; /* Medium green-gray for secondary text */
+            --border-color: #e2ebe2; /* Light green-gray for borders */
+            --input-bg: #ffffff; /* White input background */
+            --timestamp-color: #a0b0a0; /* Muted green-gray for timestamps */
+            --user-bubble-bg: #e3f2e3; /* Light mint for user messages */
+            --system-bubble-bg: #ffffff; /* White for system messages */
+            --separator-color: #edf4ed; /* Very light green for separators */
+            --header-text: #445444; /* Header text color */
+            --header-bg: #ffffff; /* Header background color */
+            --dropdown-bg: rgba(0, 0, 0, 0.1); /* Dropdown background */
+            --dropdown-text: #445444; /* Dropdown text color */
+        }
+        
+        /* Sunset Orange Theme */
+        [data-theme="sunset"] {
+            --primary-color: #ff9e7a; /* Sunset orange for primary elements */
+            --primary-light: #ffeee6; /* Light peach for backgrounds */
+            --primary-text: #6d4e47; /* Dark brown for buttons and text */
+            --primary-hover: #ff8a61; /* Slightly darker orange for hover states */
+            --background-color: #fff9f5; /* Very light peach background */
+            --chat-bg: #ffffff; /* White chat background */
+            --text-color: #5a4a45; /* Dark brown for text */
+            --text-secondary: #9e8c85; /* Medium brown for secondary text */
+            --border-color: #eee3dd; /* Light peach for borders */
+            --input-bg: #ffffff; /* White input background */
+            --timestamp-color: #b8a8a0; /* Muted brown for timestamps */
+            --user-bubble-bg: #ffeee6; /* Light peach for user messages */
+            --system-bubble-bg: #ffffff; /* White for system messages */
+            --separator-color: #f5ece7; /* Very light peach for separators */
+            --header-text: #5a4a45; /* Header text color */
+            --header-bg: #ffffff; /* Header background color */
+            --dropdown-bg: rgba(0, 0, 0, 0.1); /* Dropdown background */
+            --dropdown-text: #5a4a45; /* Dropdown text color */
         }
 
         * {
@@ -53,8 +146,8 @@
         }
 
         .chat-header {
-            background-color: var(--chat-bg);
-            color: var(--text-color);
+            background-color: var(--header-bg);
+            color: var(--header-text);
             padding: 16px 20px;
             font-weight: 500;
             font-size: 16px;
@@ -78,18 +171,24 @@
             border-radius: 6px;
         }
         
-        .model-selector {
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .model-selector, .theme-selector {
             display: inline-flex;
             margin-left: 8px;
             vertical-align: middle;
             align-items: center;
             position: relative;
-            background-color: rgba(0, 0, 0, 0.1);
+            background-color: var(--dropdown-bg);
             border-radius: 10px;
             padding: 0 6px 0 0;
         }
         
-        .model-dropdown {
+        .model-dropdown, .theme-dropdown {
             font-size: 12px;
             background-color: transparent;
             padding: 2px 2px 2px 8px;
@@ -103,20 +202,22 @@
             appearance: none;
             outline: none;
             z-index: 2;
+            color: var(--dropdown-text);
         }
         
         .dropdown-arrow {
             font-size: 8px;
             margin-left: -2px;
-            color: rgba(0, 0, 0, 0.5);
+            color: var(--dropdown-text);
+            opacity: 0.6;
             pointer-events: none;
         }
         
-        .model-selector:hover {
-            background-color: rgba(0, 0, 0, 0.2);
+        .model-selector:hover, .theme-selector:hover {
+            filter: brightness(0.9);
         }
         
-        .model-dropdown:focus {
+        .model-dropdown:focus, .theme-dropdown:focus {
             outline: none;
         }
         
@@ -463,7 +564,19 @@
                     <span class="dropdown-arrow">▼</span>
                 </div>
             </div>
-            <button class="reset-btn" id="resetBtn">Reset chat</button>
+            <div class="header-controls">
+                <div class="theme-selector">
+                    <select id="themeSelect" class="theme-dropdown" title="Select theme">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                        <option value="pastel">Pastel Blue</option>
+                        <option value="forest">Forest Green</option>
+                        <option value="sunset">Sunset Orange</option>
+                    </select>
+                    <span class="dropdown-arrow">▼</span>
+                </div>
+                <button class="reset-btn" id="resetBtn">Reset chat</button>
+            </div>
         </div>
         <div class="chat-messages" id="chatMessages"></div>
         
