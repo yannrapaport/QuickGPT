@@ -180,11 +180,22 @@
             opacity: 0.8;
         }
         
-        .app-icon {
+        .logo-container {
             height: 30px;
             width: 30px;
             margin-right: 8px;
-            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-container svg {
+            height: 30px;
+            width: 30px;
+        }
+        
+        .logo-background {
+            fill: var(--primary-color);
         }
         
         .header-center {
@@ -596,7 +607,9 @@
         <div class="chat-header">
             <div class="header-title">
                 <button id="logoToggleBtn" class="logo-btn" title="Toggle between models">
-                    <img id="logoIcon" src="quickgpt-icon-single.png" alt="QuickGPT" class="app-icon">
+                    <div id="logoContainer" class="logo-container">
+                        <!-- Single bolt logo will be inserted here dynamically -->
+                    </div>
                     <span>QuickGPT</span>
                 </button>
             </div>
@@ -717,15 +730,37 @@
             // Get logo and theme toggle buttons
             const logoToggleBtn = document.getElementById('logoToggleBtn');
             const themeToggleBtn = document.getElementById('themeToggleBtn');
-            const logoIcon = document.getElementById('logoIcon');
+            const logoContainer = document.getElementById('logoContainer');
             
             // Long press detection variables
             let logoLongPressTimer;
             let themeLongPressTimer;
             const longPressDelay = 500; // milliseconds for long press
             
-            // Update logo based on current model
-            updateLogo();
+            // Load SVG logos asynchronously
+            const singleBoltLogoPromise = fetch('quickgpt-logo-single.svg')
+                .then(response => response.text());
+                
+            const doubleBoltLogoPromise = fetch('quickgpt-logo-double.svg')
+                .then(response => response.text());
+                
+            // Wait for both logos to load
+            Promise.all([singleBoltLogoPromise, doubleBoltLogoPromise])
+                .then(([singleBoltSvg, doubleBoltSvg]) => {
+                    // Store logos in memory for quick switching
+                    window.logoSvgs = {
+                        single: singleBoltSvg,
+                        double: doubleBoltSvg
+                    };
+                    
+                    // Update logo based on current model
+                    updateLogo();
+                })
+                .catch(error => {
+                    console.error('Error loading SVG logos:', error);
+                    // Fallback in case SVG loading fails
+                    logoContainer.innerHTML = `<div style="width:30px;height:30px;background:var(--primary-color);border-radius:50%;"></div>`;
+                });
             
             // Logo/model toggle button click (cycle through options)
             logoToggleBtn.addEventListener('click', function(e) {
@@ -844,11 +879,16 @@
             
             // Function to update logo based on model
             function updateLogo() {
-                if (currentModel === 'gpt-4o-mini') {
-                    logoIcon.src = 'quickgpt-icon-double.png';
-                } else {
-                    logoIcon.src = 'quickgpt-icon-single.png';
-                }
+                // Check if SVGs are loaded
+                if (!window.logoSvgs) return;
+                
+                // Select the appropriate SVG based on the current model
+                const svgContent = currentModel === 'gpt-4o-mini' 
+                    ? window.logoSvgs.double 
+                    : window.logoSvgs.single;
+                
+                // Set the SVG content
+                logoContainer.innerHTML = svgContent;
             }
             
             // Function to set up quick answer buttons 
