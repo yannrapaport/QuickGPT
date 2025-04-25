@@ -449,7 +449,11 @@
             
             // Continue in ChatGPT button
             continueBtn.addEventListener('click', function() {
-                generateChatGPTPrompt();
+                // Only generate the prompt if this is the first click or the textarea is empty
+                if (continueBtn.textContent.trim() === 'Continue in ChatGPT' || promptPreview.value.trim() === '') {
+                    generateChatGPTPrompt();
+                }
+                
                 document.querySelector('.prompt-preview-container').style.display = 'block';
                 
                 // Rename the button after first click
