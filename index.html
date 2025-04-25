@@ -58,6 +58,29 @@
             font-weight: 500;
             font-size: 16px;
             border-bottom: 1px solid var(--separator-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-title {
+            flex-grow: 1;
+        }
+        
+        .reset-btn {
+            background-color: var(--primary-light);
+            color: var(--primary-text);
+            border: none;
+            border-radius: 18px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .reset-btn:hover {
+            background-color: var(--primary-hover);
         }
 
         .chat-messages {
@@ -375,7 +398,10 @@
 </head>
 <body>
     <div class="chat-container">
-        <div class="chat-header">AI Chat with Continue in ChatGPT</div>
+        <div class="chat-header">
+            <div class="header-title">AI Chat with Continue in ChatGPT</div>
+            <button class="reset-btn" id="resetBtn">Reset chat</button>
+        </div>
         <div class="chat-messages" id="chatMessages"></div>
         
         <div class="quick-answers" id="quickAnswers" style="display: none;">
@@ -425,6 +451,7 @@
             const promptPreview = document.getElementById('promptPreview');
             const copyNotification = document.getElementById('copyNotification');
             const backBtn = document.getElementById('backBtn');
+            const resetBtn = document.getElementById('resetBtn');
             
             let currentQuestion = '';
             let currentResponse = '';
@@ -511,6 +538,31 @@
                 
                 // Hide the copy notification
                 copyNotification.style.display = 'none';
+            });
+            
+            // Reset chat button
+            resetBtn.addEventListener('click', function() {
+                // Clear all messages
+                chatMessages.innerHTML = '';
+                
+                // Hide quick answers and continue section
+                quickAnswers.style.display = 'none';
+                continueSection.style.display = 'none';
+                
+                // Reset continue button text
+                continueBtn.textContent = 'Continue in ChatGPT';
+                
+                // Hide prompt preview container
+                document.querySelector('.prompt-preview-container').style.display = 'none';
+                
+                // Reset prompt preview content
+                promptPreview.value = '';
+                
+                // Reset copy notification
+                copyNotification.style.display = 'none';
+                
+                // Focus on message input
+                messageInput.focus();
             });
             
             // Send message function
