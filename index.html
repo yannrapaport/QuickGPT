@@ -379,13 +379,21 @@
             line-height: 1.5;
         }
 
-        .quick-answers {
+        .quick-answers-container {
             display: flex;
             flex-wrap: wrap;
+            align-items: center;
             gap: 8px;
             margin-top: 16px;
             margin-bottom: 16px;
             padding: 0 24px;
+        }
+
+        .quick-answers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            flex-grow: 1;
         }
 
         .quick-answer-btn {
@@ -403,104 +411,108 @@
             background-color: var(--primary-light);
             border-color: var(--primary-color);
         }
-
-        .continue-section {
-            padding: 16px 24px;
-            border-top: 1px solid var(--separator-color);
-        }
-
-        .continue-btn {
+        
+        .more-options-btn {
             background-color: var(--primary-color);
             color: var(--primary-text);
             border: none;
             border-radius: 18px;
-            padding: 8px 16px;
+            height: 36px;
+            min-width: 36px;
+            padding: 0 12px;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
-            height: 36px;
-            display: inline-flex;
+            display: flex;
             align-items: center;
+            justify-content: center;
         }
-
-        .continue-btn:hover {
+        
+        .more-options-btn:hover {
             background-color: var(--primary-hover);
         }
         
-        .continue-actions {
-            display: flex;
-            align-items: center;
-            margin-top: 16px;
-            gap: 10px;
+        .more-options-btn.active {
+            background-color: var(--primary-hover);
+        }
+
+        .continue-section {
+            padding: 16px 24px;
+            border-top: none;
+            margin-bottom: 16px;
         }
 
         .prompt-preview-container {
-            margin-top: 16px;
-            display: none;
+            position: relative;
+            width: 100%;
         }
         
         .prompt-preview {
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px;
-            height: 150px;
+            border-radius: 18px;
+            padding: 12px 12px 42px 12px; /* Extra padding at bottom for clip button */
+            min-height: 120px;
+            max-height: 200px;
             width: 100%;
             resize: vertical;
-            font-family: 'SF Mono', Menlo, Monaco, Consolas, monospace;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             white-space: pre-wrap;
-            font-size: 13px;
+            font-size: 14px;
             line-height: 1.5;
             color: var(--text-color);
             outline: none;
-            margin-bottom: 16px;
         }
         
         .prompt-preview:focus {
             border-color: var(--primary-color);
+            box-shadow: 0 0 0 1px var(--primary-light);
+        }
+        
+        .prompt-actions {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .copy-notification {
-            color: var(--primary-text);
-            font-size: 13px;
-            font-weight: 500;
-            display: none;
-        }
-        
-        .back-btn {
-            background-color: var(--primary-light);
+        .clip-btn {
+            background-color: var(--primary-color);
             color: var(--primary-text);
             border: none;
-            border-radius: 18px;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 500;
+            border-radius: 50%;
+            padding: 0;
+            width: 32px;
+            height: 32px;
             cursor: pointer;
             transition: all 0.2s;
-            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .back-btn:hover {
+        .clip-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .clip-btn:hover {
             background-color: var(--primary-hover);
         }
 
-        .copy-btn {
+        .copy-notification {
+            color: var(--text-color);
             background-color: var(--primary-light);
-            color: var(--primary-text);
-            border: none;
-            border-radius: 18px;
-            padding: 8px 16px;
+            border-radius: 12px;
+            padding: 4px 10px;
             font-size: 13px;
             font-weight: 500;
-            cursor: pointer;
             display: none;
-            transition: all 0.2s;
-        }
-
-        .copy-btn:hover {
-            background-color: var(--primary-light);
-            border-color: var(--primary-color);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
         }
 
         .controls-container {
@@ -652,18 +664,27 @@
         </div>
         <div class="chat-messages" id="chatMessages"></div>
         
-        <div class="quick-answers" id="quickAnswers" style="display: none;">
-            <!-- Quick answer buttons will be dynamically inserted here -->
+        <div class="quick-answers-container">
+            <div class="quick-answers" id="quickAnswers" style="display: none;">
+                <!-- Quick answer buttons will be dynamically inserted here -->
+            </div>
+            <button class="more-options-btn" id="moreOptionsBtn" style="display: none;" title="Continue in ChatGPT">
+                <span>...</span>
+            </button>
         </div>
         
         <div class="continue-section" id="continueSection" style="display: none;">
-            <div class="continue-actions">
-                <button class="continue-btn" id="continueBtn">Continue in ChatGPT</button>
-                <div class="copy-notification" id="copyNotification">✓ Copied to clipboard</div>
-            </div>
             <div class="prompt-preview-container">
-                <textarea class="prompt-preview" id="promptPreview" spellcheck="false"></textarea>
-                <button class="back-btn" id="backBtn">Back to conversation</button>
+                <textarea class="prompt-preview" id="promptPreview" placeholder="Conversation summary for ChatGPT..." spellcheck="false"></textarea>
+                <div class="prompt-actions">
+                    <div class="copy-notification" id="copyNotification">✓ Copied to clipboard</div>
+                    <button class="clip-btn" id="clipBtn" title="Copy to clipboard">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
         
@@ -693,10 +714,10 @@
             const chatMessages = document.getElementById('chatMessages');
             const quickAnswers = document.getElementById('quickAnswers');
             const continueSection = document.getElementById('continueSection');
-            const continueBtn = document.getElementById('continueBtn');
+            const moreOptionsBtn = document.getElementById('moreOptionsBtn');
             const promptPreview = document.getElementById('promptPreview');
             const copyNotification = document.getElementById('copyNotification');
-            const backBtn = document.getElementById('backBtn');
+            const clipBtn = document.getElementById('clipBtn');
             const resetBtn = document.getElementById('resetBtn');
             const modelSelect = document.getElementById('modelSelect');
             const themeSelect = document.getElementById('themeSelect');
@@ -932,57 +953,69 @@
             promptPreview.addEventListener('input', function() {
                 // Hide the copy notification when editing
                 copyNotification.style.display = 'none';
+                copyNotification.style.opacity = '0';
+            });
+            
+            // Show/hide more options button when quick answers appear/disappear
+            function toggleMoreOptionsButton(show) {
+                if (show) {
+                    moreOptionsBtn.style.display = 'flex';
+                } else {
+                    moreOptionsBtn.style.display = 'none';
+                    // Also hide the continue section if the more button is hidden
+                    continueSection.style.display = 'none';
+                    moreOptionsBtn.classList.remove('active');
+                }
+            }
+            
+            // More options button click handler (toggle continue section)
+            moreOptionsBtn.addEventListener('click', function() {
+                const isContinueSectionVisible = continueSection.style.display === 'block';
                 
-                // Rename the continue button to "Copy Again" if needed
-                if (continueBtn.textContent.trim() === 'Continue in ChatGPT') {
-                    continueBtn.textContent = 'Copy Again';
+                if (isContinueSectionVisible) {
+                    // Hide continue section
+                    continueSection.style.display = 'none';
+                    this.classList.remove('active');
+                } else {
+                    // Show continue section and generate prompt
+                    continueSection.style.display = 'block';
+                    this.classList.add('active');
+                    
+                    // Only generate if the text area is empty
+                    if (promptPreview.value.trim() === '') {
+                        generateChatGPTPrompt();
+                    }
                 }
             });
             
-            // Continue in ChatGPT button
-            continueBtn.addEventListener('click', function() {
-                // Only generate the prompt if this is the first click or the textarea is empty
-                if (continueBtn.textContent.trim() === 'Continue in ChatGPT' || promptPreview.value.trim() === '') {
-                    generateChatGPTPrompt();
-                }
-                
-                document.querySelector('.prompt-preview-container').style.display = 'block';
-                
-                // Rename the button after first click
-                if (continueBtn.textContent.trim() === 'Continue in ChatGPT') {
-                    continueBtn.textContent = 'Copy Again';
-                }
-                
-                // Automatically copy to clipboard
+            // Clip button click handler
+            clipBtn.addEventListener('click', function() {
+                // Get the text from the prompt preview
                 const text = promptPreview.value;
+                
+                // Copy to clipboard
                 navigator.clipboard.writeText(text)
                     .then(() => {
-                        // Show notification
+                        // Show notification with fade-in effect
                         copyNotification.style.display = 'inline-block';
+                        // Force a reflow to ensure the transition works
+                        void copyNotification.offsetWidth;
+                        copyNotification.style.opacity = '1';
                         
-                        // Hide notification if editing happens
-                        promptPreview.addEventListener('input', function hideNotificationOnce() {
-                            copyNotification.style.display = 'none';
-                            promptPreview.removeEventListener('input', hideNotificationOnce);
-                        });
+                        // Fade out notification after 2 seconds
+                        setTimeout(() => {
+                            copyNotification.style.opacity = '0';
+                            // Hide completely after fade-out animation completes
+                            setTimeout(() => {
+                                if (copyNotification.style.opacity === '0') {
+                                    copyNotification.style.display = 'none';
+                                }
+                            }, 300); // Match the transition duration
+                        }, 2000);
                     })
                     .catch(err => {
                         console.error('Failed to copy: ', err);
-                        // If copy fails, don't show the notification
-                        copyNotification.style.display = 'none';
                     });
-            });
-            
-            // Back to conversation button
-            backBtn.addEventListener('click', function() {
-                // Hide the prompt preview container
-                document.querySelector('.prompt-preview-container').style.display = 'none';
-                
-                // Reset the continue button text
-                continueBtn.textContent = 'Continue in ChatGPT';
-                
-                // Hide the copy notification
-                copyNotification.style.display = 'none';
             });
             
             // Function to apply selected theme
@@ -1033,21 +1066,20 @@
                 // Clear all messages
                 chatMessages.innerHTML = '';
                 
-                // Hide quick answers and continue section
+                // Hide quick answers, more options button and continue section
                 quickAnswers.style.display = 'none';
+                toggleMoreOptionsButton(false);
                 continueSection.style.display = 'none';
                 
-                // Reset continue button text
-                continueBtn.textContent = 'Continue in ChatGPT';
-                
-                // Hide prompt preview container
-                document.querySelector('.prompt-preview-container').style.display = 'none';
+                // Reset more options button state
+                moreOptionsBtn.classList.remove('active');
                 
                 // Reset prompt preview content
                 promptPreview.value = '';
                 
                 // Reset copy notification
                 copyNotification.style.display = 'none';
+                copyNotification.style.opacity = '0';
                 
                 // Focus on message input
                 messageInput.focus();
@@ -1176,9 +1208,12 @@
                 chatMessages.appendChild(messageElement);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
                 
-                // Show quick answers and continue section
+                // Show quick answers and the "..." button
                 quickAnswers.style.display = 'flex';
-                continueSection.style.display = 'block';
+                toggleMoreOptionsButton(true);
+                
+                // Hide continue section by default until "..." is clicked
+                continueSection.style.display = 'none';
             }
             
             // Get response from ChatGPT API
@@ -1320,8 +1355,9 @@
                         // Display the API response
                         addSystemMessage(data.message.content);
                         
-                        // Show continue section after getting a response
-                        continueSection.style.display = 'block';
+                        // Don't show continue section automatically - only when "..." is clicked
+                        // Show/enable more options button instead
+                        toggleMoreOptionsButton(true);
                         
                         // Update quick answers with dynamic suggestions if available
                         if (data.quickAnswers && Array.isArray(data.quickAnswers)) {
@@ -1362,8 +1398,9 @@
                         // Display the fallback response
                         addSystemMessage(response);
                         
-                        // Show continue section after getting a response
-                        continueSection.style.display = 'block';
+                        // Don't show continue section automatically - only when "..." is clicked
+                        // Show/enable more options button instead
+                        toggleMoreOptionsButton(true);
                         
                         // Set default quick answers for fallback mode
                         updateQuickAnswers(["Tell me more", "How does it work?", "Can you elaborate?"]);
