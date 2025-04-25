@@ -456,9 +456,7 @@
         <div class="chat-messages" id="chatMessages"></div>
         
         <div class="quick-answers" id="quickAnswers" style="display: none;">
-            <button class="quick-answer-btn" data-text="Can you elaborate?">Can you elaborate?</button>
-            <button class="quick-answer-btn" data-text="Give me an example">Give me an example</button>
-            <button class="quick-answer-btn" data-text="What if I do the opposite?">What if I do the opposite?</button>
+            <!-- Quick answer buttons will be dynamically inserted here -->
         </div>
         
         <div class="continue-section" id="continueSection" style="display: none;">
@@ -527,14 +525,42 @@
             // Send button click handler
             sendBtn.addEventListener('click', sendMessage);
             
-            // Quick answer buttons
-            document.querySelectorAll('.quick-answer-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const text = this.getAttribute('data-text');
-                    addUserMessage(text);
-                    simulateResponse(text);
+            // Function to set up quick answer buttons 
+            function setupQuickAnswerButtons() {
+                document.querySelectorAll('.quick-answer-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const text = this.getAttribute('data-text');
+                        addUserMessage(text);
+                        simulateResponse(text);
+                    });
                 });
-            });
+            }
+            
+            // Function to update quick answer buttons with new suggestions
+            function updateQuickAnswers(suggestions) {
+                // Clear existing buttons
+                quickAnswers.innerHTML = '';
+                
+                // Create new buttons based on suggestions
+                if (suggestions && Array.isArray(suggestions) && suggestions.length > 0) {
+                    suggestions.forEach(suggestion => {
+                        const button = document.createElement('button');
+                        button.className = 'quick-answer-btn';
+                        button.setAttribute('data-text', suggestion);
+                        button.textContent = suggestion;
+                        quickAnswers.appendChild(button);
+                    });
+                    
+                    // Add event listeners to new buttons
+                    setupQuickAnswerButtons();
+                    
+                    // Show quick answers section
+                    quickAnswers.style.display = 'flex';
+                } else {
+                    // Hide quick answers if none available
+                    quickAnswers.style.display = 'none';
+                }
+            }
             
             // Hide copy notification when the prompt is edited
             promptPreview.addEventListener('input', function() {
@@ -917,6 +943,11 @@
                         
                         // Show continue section after getting a response
                         continueSection.style.display = 'block';
+                        
+                        // Update quick answers with dynamic suggestions if available
+                        if (data.quickAnswers && Array.isArray(data.quickAnswers)) {
+                            updateQuickAnswers(data.quickAnswers);
+                        }
                     }
                     catch (apiError) {
                         console.error("API error details:", apiError);

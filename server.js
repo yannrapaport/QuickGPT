@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { OpenAI } = require('openai');
 const path = require('path');
+const util = require('util');
 
 // Create the Express app
 const app = express();
@@ -16,6 +17,62 @@ app.use(express.static(path.join(__dirname, './')));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
+
+// Function to generate quick answer suggestions based on AI response
+async function generateQuickAnswers(response, openai) {
+  try {
+    if (!openai) {
+      console.log('OpenAI client not available for generating quick answers');
+      return getDefaultQuickAnswers();
+    }
+    
+    console.log('Generating quick answer suggestions...');
+    
+    // Use a cheaper, faster model for generating quick answers
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo", // Use cheaper model for suggestions
+      messages: [
+        {
+          role: "system", 
+          content: "Generate 3 short follow-up questions or statements that a user might want to respond with based on this assistant message. Format as JSON array with each suggestion being 2-5 words maximum. The suggestions should be diverse and cover different directions the conversation could go."
+        },
+        {
+          role: "user",
+          content: `Assistant's message: "${response}"`
+        }
+      ],
+      max_tokens: 150,
+      temperature: 0.7,
+      response_format: { type: "json_object" }
+    });
+    
+    const result = completion.choices[0].message.content;
+    console.log('Generated quick answer suggestions:', result);
+    
+    try {
+      const parsed = JSON.parse(result);
+      if (parsed.suggestions && Array.isArray(parsed.suggestions) && parsed.suggestions.length > 0) {
+        return parsed.suggestions.slice(0, 3); // Ensure we have max 3 suggestions
+      }
+    } catch (parseError) {
+      console.error('Error parsing quick answer suggestions:', parseError);
+    }
+    
+    return getDefaultQuickAnswers();
+  } catch (error) {
+    console.error('Error generating quick answers:', error);
+    return getDefaultQuickAnswers();
+  }
+}
+
+// Default quick answers when generation fails
+function getDefaultQuickAnswers() {
+  return [
+    "Tell me more",
+    "Why is that?",
+    "Give an example"
+  ];
+}
 
 // Function to generate fallback responses
 function generateFallbackResponse(question) {
@@ -108,10 +165,22 @@ app.post('/api/chat', async (req, res) => {
           temperature: 0.7,
         });
         
-        // Extract and return the OpenAI response
+        // Extract the OpenAI response
         if (response.choices && response.choices.length > 0) {
           console.log('OpenAI API response received successfully');
-          return res.json({ message: response.choices[0].message });
+          
+          // Get the assistant's response content
+          const assistantMessage = response.choices[0].message;
+          const responseContent = assistantMessage.content;
+          
+          // Generate quick answer suggestions based on the response
+          const quickAnswers = await generateQuickAnswers(responseContent, openai);
+          
+          // Return both the message and quick answer suggestions
+          return res.json({ 
+            message: assistantMessage, 
+            quickAnswers: quickAnswers 
+          });
         }
       } catch (apiError) {
         console.error('Error calling OpenAI API:', apiError.message);
@@ -137,12 +206,13 @@ app.post('/api/chat', async (req, res) => {
     console.log('Using fallback response mechanism');
     const simulatedResponse = generateFallbackResponse(userQuestion);
     
-    // Return the simulated response
+    // Return the simulated response with default quick answers
     return res.json({ 
       message: { 
         role: 'assistant', 
         content: simulatedResponse 
-      } 
+      },
+      quickAnswers: getDefaultQuickAnswers()
     });
     
   } catch (error) {
