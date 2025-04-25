@@ -211,13 +211,13 @@
             gap: 8px;
         }
         
-        .control-btn, .reset-btn {
+        .control-btn, .reset-btn, .clip-btn, .send-btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: var(--primary-color);
-            color: var(--primary-text);
-            border: none;
+            background-color: var(--primary-light);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
             border-radius: 50%;
             width: 36px;
             height: 36px;
@@ -226,23 +226,21 @@
         }
         
         .reset-btn {
-            background-color: var(--primary-color);
-            color: var(--primary-text);
-            border-radius: 50%;
             width: 36px;
             height: 36px;
         }
         
-        .control-btn svg {
+        .control-btn svg, .reset-btn svg, .clip-btn svg, .send-btn svg {
             width: 18px;
             height: 18px;
         }
         
-        .control-btn:hover, .reset-btn:hover {
-            background-color: var(--primary-hover);
+        .control-btn:hover, .reset-btn:hover, .clip-btn:hover, .send-btn:hover {
+            background-color: var(--primary-color);
+            color: var(--primary-text);
         }
         
-        .control-btn:active, .reset-btn:active, .logo-btn:active {
+        .control-btn:active, .reset-btn:active, .logo-btn:active, .clip-btn:active, .send-btn:active {
             transform: scale(0.95);
         }
         
@@ -424,7 +422,6 @@
         
         .separator-line.active {
             background-color: var(--primary-color);
-            box-shadow: 0 0 8px var(--primary-color);
             height: 2px;
         }
         
@@ -553,27 +550,13 @@
         }
 
         .clip-btn {
-            background-color: var(--primary-color);
-            color: var(--primary-text);
-            border: none;
-            border-radius: 50%;
-            padding: 0;
             width: 32px;
             height: 32px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         
         .clip-btn svg {
             width: 16px;
             height: 16px;
-        }
-        
-        .clip-btn:hover {
-            background-color: var(--primary-hover);
         }
 
         .copy-notification {
@@ -602,9 +585,11 @@
         }
 
         .input-container {
+            position: relative; /* For positioning the send button */
             display: flex;
             flex-direction: column;
             flex-grow: 1;
+            width: 100%;
         }
 
         .message-input {
@@ -629,11 +614,6 @@
             box-shadow: 0 0 0 1px var(--primary-light);
         }
         
-        .input-container {
-            position: relative; /* For positioning the send button */
-            width: 100%;
-        }
-        
         .button-container {
             position: absolute;
             right: 6px;
@@ -644,18 +624,8 @@
         }
 
         .send-btn {
-            background-color: var(--primary-color);
-            color: var(--primary-text);
-            border: none;
-            border-radius: 50%;
-            padding: 0;
             width: 30px;
             height: 30px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .send-btn svg {
@@ -663,13 +633,10 @@
             height: 16px;
         }
 
-        .send-btn:hover {
-            background-color: var(--primary-hover);
-        }
-
         .send-btn:disabled {
             background-color: var(--border-color);
             color: #b5b5b5;
+            border-color: var(--border-color);
             cursor: not-allowed;
         }
 
@@ -803,14 +770,14 @@
                     id="messageInput" 
                     placeholder="Type your message here..."
                     rows="1"></textarea>
-            </div>
-            <div class="button-container">
-                <button class="send-btn" id="sendBtn" disabled>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
-                </button>
+                <div class="button-container">
+                    <button class="send-btn" id="sendBtn" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
