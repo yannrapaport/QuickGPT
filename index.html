@@ -68,16 +68,20 @@
         }
         
         .model-selector {
-            display: inline-block;
+            display: inline-flex;
             margin-left: 8px;
             vertical-align: middle;
+            align-items: center;
+            position: relative;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 0 6px 0 0;
         }
         
         .model-dropdown {
             font-size: 12px;
-            background-color: rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            padding: 2px 8px;
+            background-color: transparent;
+            padding: 2px 2px 2px 8px;
             margin: 0;
             font-weight: 400;
             border: none;
@@ -87,11 +91,21 @@
             -moz-appearance: none;
             appearance: none;
             outline: none;
+            z-index: 2;
         }
         
-        .model-dropdown:hover,
-        .model-dropdown:focus {
+        .dropdown-arrow {
+            font-size: 8px;
+            margin-left: -2px;
+            color: rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+        }
+        
+        .model-selector:hover {
             background-color: rgba(0, 0, 0, 0.2);
+        }
+        
+        .model-dropdown:focus {
             outline: none;
         }
         
@@ -431,8 +445,10 @@
                 <div class="model-selector">
                     <select id="modelSelect" class="model-dropdown">
                         <option value="gpt-4o" selected>GPT-4o</option>
+                        <option value="gpt-4o-mini">GPT-4o-mini</option>
                         <option value="gpt-3.5-turbo">GPT-3.5</option>
                     </select>
+                    <span class="dropdown-arrow">▼</span>
                 </div>
             </div>
             <button class="reset-btn" id="resetBtn">Reset chat</button>
