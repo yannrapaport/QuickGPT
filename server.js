@@ -22,6 +22,40 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Function to generate fallback responses
+function generateFallbackResponse(question) {
+  // Basic response templates based on question content
+  if (!question || question.trim() === '') {
+    return "I'm here to help! Feel free to ask me anything.";
+  }
+  
+  // Convert to lowercase for easier matching
+  const lowerQuestion = question.toLowerCase();
+  
+  if (lowerQuestion.includes('hello') || lowerQuestion.includes('hi ')) {
+    return "Hello! I'm your AI assistant. How can I help you today?";
+  }
+  
+  if (lowerQuestion.includes('how are you')) {
+    return "I'm functioning well, thank you for asking! I'm here to assist you with any questions or tasks you might have.";
+  }
+  
+  if (lowerQuestion.includes('weather')) {
+    return "As a simulated response, I don't have access to real-time weather data. When you use the 'Continue in ChatGPT' feature with a valid API key, you can ask about weather and get more useful responses.";
+  }
+  
+  if (lowerQuestion.includes('help') || lowerQuestion.includes('can you')) {
+    return "I'd be happy to help! Currently, I'm running in simulation mode while waiting for a valid API key. You can test the interface and especially the 'Continue in ChatGPT' feature, which will allow you to continue this conversation with the full capabilities of GPT-4.";
+  }
+  
+  if (lowerQuestion.includes('time') || lowerQuestion.includes('date')) {
+    return "I'm a simulated response and don't have access to the current time or date. This is a temporary solution while waiting for a valid API key. Try the 'Continue in ChatGPT' feature to get more accurate responses!";
+  }
+  
+  // Default response
+  return "This is a simulated response while we're waiting for a valid OpenAI API key. Feel free to test the interface, especially the 'Continue in ChatGPT' feature which allows you to take this conversation to the full GPT-4 model for more detailed responses.\n\nOnce you provide a valid API key, you'll get genuine AI-generated responses here instead of this placeholder.";
+}
+
 // API endpoint for ChatGPT completion
 app.post('/api/chat', async (req, res) => {
   try {
@@ -84,40 +118,6 @@ app.post('/api/chat', async (req, res) => {
     });
   }
 });
-
-// Function to generate fallback responses
-function generateFallbackResponse(question) {
-  // Basic response templates based on question content
-  if (!question || question.trim() === '') {
-    return "I'm here to help! Feel free to ask me anything.";
-  }
-  
-  // Convert to lowercase for easier matching
-  const lowerQuestion = question.toLowerCase();
-  
-  if (lowerQuestion.includes('hello') || lowerQuestion.includes('hi ')) {
-    return "Hello! I'm your AI assistant. How can I help you today?";
-  }
-  
-  if (lowerQuestion.includes('how are you')) {
-    return "I'm functioning well, thank you for asking! I'm here to assist you with any questions or tasks you might have.";
-  }
-  
-  if (lowerQuestion.includes('weather')) {
-    return "As a simulated response, I don't have access to real-time weather data. When you use the 'Continue in ChatGPT' feature with a valid API key, you can ask about weather and get more useful responses.";
-  }
-  
-  if (lowerQuestion.includes('help') || lowerQuestion.includes('can you')) {
-    return "I'd be happy to help! Currently, I'm running in simulation mode while waiting for a valid API key. You can test the interface and especially the 'Continue in ChatGPT' feature, which will allow you to continue this conversation with the full capabilities of GPT-4.";
-  }
-  
-  if (lowerQuestion.includes('time') || lowerQuestion.includes('date')) {
-    return "I'm a simulated response and don't have access to the current time or date. This is a temporary solution while waiting for a valid API key. Try the 'Continue in ChatGPT' feature to get more accurate responses!";
-  }
-  
-  // Default response
-  return "This is a simulated response while we're waiting for a valid OpenAI API key. Feel free to test the interface, especially the 'Continue in ChatGPT' feature which allows you to take this conversation to the full GPT-4 model for more detailed responses.\n\nOnce you provide a valid API key, you'll get genuine AI-generated responses here instead of this placeholder.";
-}
 
 // Start the server
 app.listen(port, '0.0.0.0', () => {
