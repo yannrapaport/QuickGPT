@@ -763,40 +763,74 @@
                     // Add the current question
                     messages.push({role: 'user', content: question});
                     
-                    // Make API call to the server
-                    const response = await fetch('/api/chat', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ messages }),
-                    });
+                    // Store current question for the prompt
+                    currentQuestion = question;
                     
-                    // Remove loading message
-                    loadingElement.remove();
+                    // API call with timeout (5 seconds)
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
                     
-                    if (!response.ok) {
-                        throw new Error(`API call failed: ${response.status}`);
+                    try {
+                        // Make API call to the server
+                        const response = await fetch('/api/chat', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ messages }),
+                            signal: controller.signal
+                        });
+                        
+                        clearTimeout(timeoutId); // Clear the timeout if request completes
+                        
+                        // Process the response
+                        if (!response.ok) {
+                            throw new Error(`API call failed: ${response.status}`);
+                        }
+                        
+                        const data = await response.json();
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+                        
+                        // Store current response for the prompt 
+                        currentResponse = data.message.content;
+                        
+                        // Display the response
+                        addSystemMessage(data.message.content);
+                        
+                        // Show continue section after getting a response
+                        continueSection.style.display = 'block';
+                    } catch (fetchError) {
+                        if (fetchError.name === 'AbortError') {
+                            throw new Error('Request timed out. The server might be taking too long to respond.');
+                        } else {
+                            throw fetchError;
+                        }
                     }
-                    
-                    const data = await response.json();
-                    if (data.error) {
-                        throw new Error(data.error);
-                    }
-                    
-                    // Display the response
-                    addSystemMessage(data.message.content);
                 } catch (error) {
                     console.error('Error getting response:', error);
                     
                     // Remove loading message if it exists
                     const loadingElement = document.getElementById('loading-message');
                     if (loadingElement) {
-                        loadingElement.parentElement.remove();
+                        loadingElement.parentElement.parentElement.remove();
                     }
                     
-                    // Show error message
-                    addSystemMessage(`Sorry, I encountered an error: ${error.message}`);
+                    // Show error message with more user-friendly text
+                    let errorMessage = "Sorry, I couldn't process your request.";
+                    
+                    if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+                        errorMessage += " There seems to be a network issue. Please check your connection.";
+                    } else if (error.message.includes('timed out')) {
+                        errorMessage += " The request took too long to complete. The server might be busy.";
+                    } else if (error.message.includes('API call failed: 5')) {
+                        errorMessage += " There was a server error. Please try again later.";
+                    } else {
+                        errorMessage += " You can still test the 'Continue in ChatGPT' feature while we resolve this issue.";
+                    }
+                    
+                    addSystemMessage(errorMessage);
                 }
             }
             

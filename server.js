@@ -3,20 +3,6 @@ const cors = require('cors');
 const { OpenAI } = require('openai');
 const path = require('path');
 
-// Initialize the OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  dangerouslyAllowBrowser: false,
-  defaultHeaders: {
-    'User-Agent': 'ReplitChatApp/1.0.0'
-  },
-  defaultQuery: {
-    'api-version': '2023-05-15'
-  },
-  timeout: 30000, // 30 seconds
-  maxRetries: 2
-});
-
 // Create the Express app
 const app = express();
 const port = 5000;
@@ -77,51 +63,47 @@ app.post('/api/chat', async (req, res) => {
     
     // Get the latest user message (to create a relevant response)
     const lastUserMessage = messages.filter(msg => msg.role === 'user').pop();
-    let userQuestion = lastUserMessage ? lastUserMessage.content : '';
+    const userQuestion = lastUserMessage ? lastUserMessage.content : '';
     
-    // Try to use the OpenAI API first (for when we get a working key)
-    try {
-      // Format messages for OpenAI API
-      const formattedMessages = messages.map(msg => ({
-        role: msg.role,
-        content: msg.content
-      }));
-      
-      // Log API key status (without revealing the key)
-      console.log('OpenAI API key status: ' + (process.env.OPENAI_API_KEY ? 'Present (length: ' + process.env.OPENAI_API_KEY.length + ')' : 'Missing'));
-      
-      // Call the OpenAI API with chat completions
-      console.log('Attempting to call OpenAI API with model: gpt-4o');
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-        messages: formattedMessages,
-        max_tokens: 500,
-        temperature: 0.7,
-      });
-      
-      console.log('OpenAI API response received successfully');
-      
-      // Extract and return the OpenAI response
-      if (response.choices && response.choices.length > 0) {
-        return res.json({ message: response.choices[0].message });
+    // Try to use the OpenAI API if the key is available
+    if (process.env.OPENAI_API_KEY) {
+      try {
+        // Initialize the OpenAI client with the API key
+        const openai = new OpenAI({
+          apiKey: process.env.OPENAI_API_KEY
+        });
+        
+        // Format messages for OpenAI API
+        const formattedMessages = messages.map(msg => ({
+          role: msg.role,
+          content: msg.content
+        }));
+        
+        // Call the OpenAI API with chat completions
+        console.log('Attempting to call OpenAI API...');
+        const response = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo", // Using a reliable chat model
+          messages: formattedMessages,
+          max_tokens: 500,
+          temperature: 0.7,
+        });
+        
+        // Extract and return the OpenAI response
+        if (response.choices && response.choices.length > 0) {
+          console.log('OpenAI API response received successfully');
+          return res.json({ message: response.choices[0].message });
+        }
+      } catch (apiError) {
+        console.error('Error calling OpenAI API:', apiError.message);
+        // Continue to fallback response
       }
-    } catch (apiError) {
-      console.error('Error calling OpenAI API:', apiError.message);
-      console.error('API Error details:', JSON.stringify({
-        status: apiError.status,
-        headers: apiError.headers,
-        code: apiError.code,
-        type: apiError.type,
-        name: apiError.name
-      }, null, 2));
-      // If API call fails, continue to fallback (don't return error response)
+    } else {
+      console.log('No OpenAI API key found, using fallback response');
     }
     
-    // Fallback to simulated response if OpenAI call fails
+    // Fallback to simulated response
     console.log('Using fallback response mechanism');
-    
-    // Create a simulated response based on the user's message
-    let simulatedResponse = generateFallbackResponse(userQuestion);
+    const simulatedResponse = generateFallbackResponse(userQuestion);
     
     // Return the simulated response
     return res.json({ 
@@ -132,8 +114,7 @@ app.post('/api/chat', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Error in chat endpoint:', error);
-    console.error('Error details:', JSON.stringify(error, null, 2));
+    console.error('Error in chat endpoint:', error.message);
     return res.status(500).json({ 
       error: 'Error processing your request',
       details: error.message 
@@ -141,15 +122,7 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// Function to mask an API key for safe logging
-function maskApiKey(key) {
-  if (!key) return 'NOT PRESENT';
-  if (key.length <= 8) return '****';
-  return key.substring(0, 4) + '****' + key.substring(key.length - 4);
-}
-
 // Start the server
 app.listen(port, '0.0.0.0', () => {
   console.log(`Server running at http://0.0.0.0:${port}`);
-  console.log(`API Key (masked): ${maskApiKey(process.env.OPENAI_API_KEY)}`);
 });
