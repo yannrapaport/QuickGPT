@@ -985,6 +985,9 @@
                         
                         // Show continue section after getting a response
                         continueSection.style.display = 'block';
+                        
+                        // Set default quick answers for fallback mode
+                        updateQuickAnswers(["Tell me more", "How does it work?", "Can you elaborate?"]);
                     }
                 } catch (error) {
                     console.error('Error getting response:', error);
@@ -1009,6 +1012,9 @@
                     }
                     
                     addSystemMessage(errorMessage);
+                    
+                    // Show some helpful quick answers for error case
+                    updateQuickAnswers(["Try again", "Reset chat", "What's happening?"]);
                 }
             }
             
