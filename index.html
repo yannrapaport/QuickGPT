@@ -868,7 +868,10 @@
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify({ messages: messagesForAPI }),
+                            body: JSON.stringify({ 
+                                messages: messagesForAPI,
+                                model: currentModel 
+                            }),
                             signal: controller.signal
                         });
                         

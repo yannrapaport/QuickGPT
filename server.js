@@ -55,13 +55,17 @@ function generateFallbackResponse(question) {
 app.post('/api/chat', async (req, res) => {
   try {
     console.log('Received request body:', JSON.stringify(req.body));
-    const { messages } = req.body;
+    const { messages, model } = req.body;
     
     // Validate request
     if (!messages || !Array.isArray(messages)) {
       console.error('Invalid messages format:', messages);
       return res.status(400).json({ error: 'Invalid request format. Messages array is required.' });
     }
+    
+    // Default to gpt-4o if no model specified
+    const selectedModel = model || "gpt-4o";
+    console.log('Using model:', selectedModel);
     
     // Get the latest user message (to create a relevant response)
     const lastUserMessage = messages.filter(msg => msg.role === 'user').pop();
@@ -96,9 +100,9 @@ app.post('/api/chat', async (req, res) => {
         }));
         
         // Call the OpenAI API with chat completions
-        console.log('Attempting to call OpenAI API with GPT-4o model...');
+        console.log(`Attempting to call OpenAI API with ${selectedModel} model...`);
         const response = await openai.chat.completions.create({
-          model: "gpt-4o", // The newest OpenAI model is "gpt-4o" which was released May 13, 2024
+          model: selectedModel, // Use the model selected by the user
           messages: formattedMessages,
           max_tokens: 500,
           temperature: 0.7,
