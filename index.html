@@ -367,18 +367,12 @@
         </div>
         
         <div class="continue-section" id="continueSection" style="display: none;">
-            <button class="continue-btn" id="continueBtn">
-                Continue in ChatGPT
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: -3px;">
-                    <path d="M5 12h14M12 5l7 7-7 7"></path>
-                </svg>
-            </button>
+            <div class="continue-actions">
+                <button class="continue-btn" id="continueBtn">Continue in ChatGPT</button>
+                <div class="copy-notification" id="copyNotification">✓ Copied to clipboard</div>
+            </div>
             <div class="prompt-preview-container">
                 <textarea class="prompt-preview" id="promptPreview" spellcheck="false"></textarea>
-                <div class="continue-actions">
-                    <button class="copy-btn" id="copyBtn">Copy Again</button>
-                    <div class="copy-notification" id="copyNotification">✓ Copied to clipboard</div>
-                </div>
             </div>
         </div>
         
@@ -410,7 +404,6 @@
             const continueSection = document.getElementById('continueSection');
             const continueBtn = document.getElementById('continueBtn');
             const promptPreview = document.getElementById('promptPreview');
-            const copyBtn = document.getElementById('copyBtn');
             const copyNotification = document.getElementById('copyNotification');
             
             let currentQuestion = '';
@@ -443,17 +436,14 @@
                 });
             });
             
-            // Rename the button and update the appearance when the prompt is edited
+            // Hide copy notification when the prompt is edited
             promptPreview.addEventListener('input', function() {
                 // Hide the copy notification when editing
                 copyNotification.style.display = 'none';
                 
-                // Make sure the copy button is always visible when editing
-                copyBtn.style.display = 'block';
-                
                 // Rename the continue button to "Copy Again" if needed
                 if (continueBtn.textContent.trim() === 'Continue in ChatGPT') {
-                    continueBtn.innerHTML = 'Copy Again <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: -3px;"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>';
+                    continueBtn.textContent = 'Copy Again';
                 }
             });
             
@@ -461,11 +451,10 @@
             continueBtn.addEventListener('click', function() {
                 generateChatGPTPrompt();
                 document.querySelector('.prompt-preview-container').style.display = 'block';
-                copyBtn.style.display = 'block';
                 
                 // Rename the button after first click
                 if (continueBtn.textContent.trim() === 'Continue in ChatGPT') {
-                    continueBtn.innerHTML = 'Copy Again <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: -3px;"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>';
+                    continueBtn.textContent = 'Copy Again';
                 }
                 
                 // Automatically copy to clipboard
@@ -485,24 +474,6 @@
                         console.error('Failed to copy: ', err);
                         // If copy fails, don't show the notification
                         copyNotification.style.display = 'none';
-                    });
-            });
-            
-            // Copy Again button
-            copyBtn.addEventListener('click', function() {
-                const text = promptPreview.value;
-                navigator.clipboard.writeText(text)
-                    .then(() => {
-                        copyNotification.style.display = 'inline-block';
-                        
-                        // Hide notification if editing happens
-                        promptPreview.addEventListener('input', function hideNotificationOnce() {
-                            copyNotification.style.display = 'none';
-                            promptPreview.removeEventListener('input', hideNotificationOnce);
-                        });
-                    })
-                    .catch(err => {
-                        console.error('Failed to copy: ', err);
                     });
             });
             
