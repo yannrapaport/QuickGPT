@@ -79,6 +79,16 @@
             margin-right: 24px;
             position: relative;
             border-left: 3px solid #64748b;
+            line-height: 1.5;
+            font-size: 14.5px;
+        }
+        
+        .system-message strong {
+            font-weight: 600;
+        }
+        
+        .system-message em {
+            font-style: italic;
         }
         
         #loading-message {
@@ -408,6 +418,25 @@
             }
             
             // Add system response to chat
+            // Function to format message text with better readability
+            function formatMessageText(text) {
+                if (!text) return '';
+                
+                // Replace newlines with <br> for better readability
+                let formatted = text.replace(/\n/g, '<br>');
+                
+                // Bold text: **text** -> <strong>text</strong>
+                formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                
+                // Italic text: *text* -> <em>text</em> (avoiding double asterisks)
+                formatted = formatted.replace(/(?<!\*)\*((?!\*).+?)\*/g, '<em>$1</em>');
+                
+                // Bullet points: - text -> •  text
+                formatted = formatted.replace(/- (.*?)(?=<br>|$)/g, '• $1');
+                
+                return formatted;
+            }
+            
             function addSystemMessage(message) {
                 currentResponse = message;
                 
@@ -416,7 +445,9 @@
                 
                 const systemMessageElement = document.createElement('div');
                 systemMessageElement.className = 'system-message';
-                systemMessageElement.textContent = message;
+                
+                // Use innerHTML to allow for formatted content
+                systemMessageElement.innerHTML = formatMessageText(message);
                 
                 messageElement.appendChild(systemMessageElement);
                 chatMessages.appendChild(messageElement);
@@ -455,7 +486,9 @@
                         if (userMessage && userMessage.textContent !== question) { // exclude current question
                             messages.push({role: 'user', content: userMessage.textContent});
                         } else if (systemMessage && systemMessage.id !== 'loading-message') {
-                            messages.push({role: 'assistant', content: systemMessage.textContent});
+                            // Get the inner HTML, then convert to plain text with proper formatting
+                            const systemContent = getTextFromHTML(systemMessage.innerHTML);
+                            messages.push({role: 'assistant', content: systemContent});
                         }
                     });
                     
@@ -500,6 +533,17 @@
             }
             
             // Generate prompt for continuing in ChatGPT
+            // Helper function to convert HTML to plain text (for the prompt)
+            function getTextFromHTML(html) {
+                // Create a temporary div to hold the HTML
+                const temp = document.createElement('div');
+                temp.innerHTML = html;
+                // Replace <br> tags with newlines
+                temp.innerHTML = temp.innerHTML.replace(/<br\s*\/?>/gi, '\n');
+                // Return the text content
+                return temp.textContent || temp.innerText || '';
+            }
+            
             function generateChatGPTPrompt() {
                 // Get all conversation messages
                 const messages = document.querySelectorAll('.message');
@@ -512,8 +556,10 @@
                     
                     if (userMessage) {
                         conversationHistory.push({role: 'user', content: userMessage.textContent});
-                    } else if (systemMessage) {
-                        conversationHistory.push({role: 'assistant', content: systemMessage.textContent});
+                    } else if (systemMessage && systemMessage.id !== 'loading-message') {
+                        // Get the inner HTML, then convert to plain text with proper formatting
+                        const systemContent = getTextFromHTML(systemMessage.innerHTML);
+                        conversationHistory.push({role: 'assistant', content: systemContent});
                     }
                 });
                 
