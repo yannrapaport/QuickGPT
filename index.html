@@ -67,6 +67,15 @@
             flex-grow: 1;
         }
         
+        .model-tag {
+            font-size: 12px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 2px 8px;
+            margin-left: 8px;
+            font-weight: 400;
+        }
+        
         .reset-btn {
             background-color: var(--primary-light);
             color: var(--primary-text);
@@ -399,7 +408,7 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <div class="header-title">AI Chat with Continue in ChatGPT</div>
+            <div class="header-title">AI Chat with Continue in ChatGPT <span class="model-tag">GPT-3.5</span></div>
             <button class="reset-btn" id="resetBtn">Reset chat</button>
         </div>
         <div class="chat-messages" id="chatMessages"></div>
@@ -823,7 +832,7 @@
                 });
                 
                 // Create a comprehensive prompt for ChatGPT
-                let prompt = `I want to continue this conversation in a new ChatGPT session. Here's the conversation so far:\n\n`;
+                let prompt = `I want to continue this conversation that was started with GPT-3.5. Please use GPT-4 or better to continue with higher quality and accuracy. Here's the conversation so far:\n\n`;
                 
                 // Format conversation history
                 conversationHistory.forEach(msg => {
@@ -831,10 +840,10 @@
                 });
                 
                 // Add instructions for continuation
-                prompt += `Please continue this conversation where we left off, keeping in mind the context and topic we were discussing. You should respond as if you are the assistant in this conversation.\n\n`;
+                prompt += `Please continue this conversation where we left off, keeping in mind the context and topic we were discussing. You should respond as if you are the assistant in this conversation, but with enhanced capabilities compared to GPT-3.5 that was used initially.\n\n`;
                 
                 // Add next steps instructions
-                prompt += `When you respond, please take into account the entire conversation history above. Your next response should be a direct continuation of this conversation, as if we never stopped talking. You don't need to remind me of what we were discussing.`;
+                prompt += `When you respond, please take into account the entire conversation history above. Your next response should be a direct continuation of this conversation, as if we never stopped talking. You don't need to remind me of what we were discussing, but feel free to provide more detailed or nuanced answers than were possible with GPT-3.5.`;
                 
                 promptPreview.value = prompt;
             }

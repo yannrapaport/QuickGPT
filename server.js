@@ -40,7 +40,7 @@ app.post('/api/chat', async (req, res) => {
     
     // Call the OpenAI API
     const response = await openai.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      model: "gpt-3.5-turbo", // Using a more cost-effective model
       messages: formattedMessages,
       max_tokens: 500,
       temperature: 0.7,
