@@ -5,7 +5,16 @@ const path = require('path');
 
 // Initialize the OpenAI client
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY,
+  dangerouslyAllowBrowser: false,
+  defaultHeaders: {
+    'User-Agent': 'ReplitChatApp/1.0.0'
+  },
+  defaultQuery: {
+    'api-version': '2023-05-15'
+  },
+  timeout: 30000, // 30 seconds
+  maxRetries: 2
 });
 
 // Create the Express app
@@ -78,20 +87,33 @@ app.post('/api/chat', async (req, res) => {
         content: msg.content
       }));
       
+      // Log API key status (without revealing the key)
+      console.log('OpenAI API key status: ' + (process.env.OPENAI_API_KEY ? 'Present (length: ' + process.env.OPENAI_API_KEY.length + ')' : 'Missing'));
+      
       // Call the OpenAI API with chat completions
+      console.log('Attempting to call OpenAI API with model: gpt-4o');
       const response = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo", // Using a reliable chat model
+        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
         messages: formattedMessages,
         max_tokens: 500,
         temperature: 0.7,
       });
+      
+      console.log('OpenAI API response received successfully');
       
       // Extract and return the OpenAI response
       if (response.choices && response.choices.length > 0) {
         return res.json({ message: response.choices[0].message });
       }
     } catch (apiError) {
-      console.error('Error calling OpenAI API:', apiError);
+      console.error('Error calling OpenAI API:', apiError.message);
+      console.error('API Error details:', JSON.stringify({
+        status: apiError.status,
+        headers: apiError.headers,
+        code: apiError.code,
+        type: apiError.type,
+        name: apiError.name
+      }, null, 2));
       // If API call fails, continue to fallback (don't return error response)
     }
     
@@ -119,7 +141,15 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
+// Function to mask an API key for safe logging
+function maskApiKey(key) {
+  if (!key) return 'NOT PRESENT';
+  if (key.length <= 8) return '****';
+  return key.substring(0, 4) + '****' + key.substring(key.length - 4);
+}
+
 // Start the server
 app.listen(port, '0.0.0.0', () => {
   console.log(`Server running at http://0.0.0.0:${port}`);
+  console.log(`API Key (masked): ${maskApiKey(process.env.OPENAI_API_KEY)}`);
 });
