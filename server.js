@@ -68,9 +68,14 @@ app.post('/api/chat', async (req, res) => {
     // Try to use the OpenAI API if the key is available
     if (process.env.OPENAI_API_KEY) {
       try {
-        // Initialize the OpenAI client with the API key
+        // Initialize the OpenAI client with the API key and improved settings
         const openai = new OpenAI({
-          apiKey: process.env.OPENAI_API_KEY
+          apiKey: process.env.OPENAI_API_KEY,
+          timeout: 30000, // 30 seconds timeout
+          maxRetries: 2,  // Retry twice on failures
+          defaultHeaders: {
+            'User-Agent': 'ReplitChatApp/1.0.0'
+          }
         });
         
         // Format messages for OpenAI API
@@ -80,9 +85,9 @@ app.post('/api/chat', async (req, res) => {
         }));
         
         // Call the OpenAI API with chat completions
-        console.log('Attempting to call OpenAI API...');
+        console.log('Attempting to call OpenAI API with GPT-4o model...');
         const response = await openai.chat.completions.create({
-          model: "gpt-3.5-turbo", // Using a reliable chat model
+          model: "gpt-4o", // The newest OpenAI model is "gpt-4o" which was released May 13, 2024
           messages: formattedMessages,
           max_tokens: 500,
           temperature: 0.7,

@@ -766,44 +766,85 @@
                     // Store current question for the prompt
                     currentQuestion = question;
                     
-                    // For now, use direct client-side responses to avoid API issues
-                    // This is a temporary solution until the API/networking issues can be resolved
-                    
-                    // Create mock responses for the demo
-                    let response;
-                    const lowerQuestion = question.toLowerCase();
-                    
-                    if (lowerQuestion.includes('hello') || lowerQuestion.includes('hi ')) {
-                        response = "Hello! I'm your AI assistant. How can I help you today?";
-                    } else if (lowerQuestion.includes('how are you')) {
-                        response = "I'm functioning well, thank you for asking! I'm here to assist you with any questions or tasks you might have.";
-                    } else if (lowerQuestion.includes('weather')) {
-                        response = "As a demonstration response, I don't have access to real-time weather data. When you use the 'Continue in ChatGPT' feature, you can ask about weather and get more useful responses.";
-                    } else if (lowerQuestion.includes('help') || lowerQuestion.includes('can you')) {
-                        response = "I'd be happy to help! This is a demo of the chat interface. Please try the 'Continue in ChatGPT' feature, which will allow you to continue this conversation with the full capabilities of GPT-4.";
-                    } else if (lowerQuestion.includes('time') || lowerQuestion.includes('date')) {
-                        response = "In this demo mode, I don't have access to the current time or date. Try the 'Continue in ChatGPT' feature to get more accurate responses!";
-                    } else {
-                        response = "This is a demonstration of the chat interface, particularly the 'Continue in ChatGPT' feature. Please click that button below to continue this conversation in a fresh ChatGPT environment.\n\nThe 'Continue in ChatGPT' feature will generate and copy a prompt summarizing our conversation, allowing you to paste it into ChatGPT to seamlessly continue where we left off.";
+                    // Try the API first, but have a fallback ready
+                    try {
+                        // API call with timeout (10 seconds)
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 10000);
+                        
+                        // Make API call to the server
+                        const response = await fetch('/api/chat', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ messages }),
+                            signal: controller.signal
+                        });
+                        
+                        clearTimeout(timeoutId); // Clear the timeout if request completes
+                        
+                        // Process the response
+                        if (!response.ok) {
+                            throw new Error(`API call failed: ${response.status}`);
+                        }
+                        
+                        const data = await response.json();
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+                        
+                        // Store current response for the prompt 
+                        currentResponse = data.message.content;
+                        
+                        // Remove loading message
+                        const loadingMsg = document.getElementById('loading-message');
+                        if (loadingMsg) {
+                            loadingMsg.parentElement.parentElement.remove();
+                        }
+                        
+                        // Display the API response
+                        addSystemMessage(data.message.content);
+                        
+                        // Show continue section after getting a response
+                        continueSection.style.display = 'block';
                     }
-                    
-                    // Store current response for the prompt
-                    currentResponse = response;
-                    
-                    // Simulate a delay for realism
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    
-                    // Remove loading message
-                    const loadingMsg = document.getElementById('loading-message');
-                    if (loadingMsg) {
-                        loadingMsg.parentElement.parentElement.remove();
+                    catch (apiError) {
+                        console.warn("API error, using client-side fallback instead:", apiError);
+                        
+                        // Fallback to local responses if API fails
+                        let response;
+                        const lowerQuestion = question.toLowerCase();
+                        
+                        if (lowerQuestion.includes('hello') || lowerQuestion.includes('hi ')) {
+                            response = "Hello! I'm your AI assistant. How can I help you today?";
+                        } else if (lowerQuestion.includes('how are you')) {
+                            response = "I'm functioning well, thank you for asking! I'm here to assist you with any questions or tasks you might have.";
+                        } else if (lowerQuestion.includes('weather')) {
+                            response = "I don't have access to real-time weather data. When you use the 'Continue in ChatGPT' feature, you can ask about weather and get more useful responses.";
+                        } else if (lowerQuestion.includes('help') || lowerQuestion.includes('can you')) {
+                            response = "I'd be happy to help! Please try the 'Continue in ChatGPT' feature, which will allow you to continue this conversation with the full capabilities of GPT-4.";
+                        } else if (lowerQuestion.includes('time') || lowerQuestion.includes('date')) {
+                            response = "I'm currently operating in fallback mode and don't have access to the current time or date. Try the 'Continue in ChatGPT' feature to get more accurate responses!";
+                        } else {
+                            response = "I'm currently operating in fallback mode due to API connection issues. Please try the 'Continue in ChatGPT' feature below to continue this conversation in a fresh ChatGPT environment with full capabilities.\n\nThe prompt will summarize our conversation so far, allowing you to seamlessly continue where we left off.";
+                        }
+                        
+                        // Store current response for the prompt
+                        currentResponse = response;
+                        
+                        // Remove loading message
+                        const loadingMsg = document.getElementById('loading-message');
+                        if (loadingMsg) {
+                            loadingMsg.parentElement.parentElement.remove();
+                        }
+                        
+                        // Display the fallback response
+                        addSystemMessage(response);
+                        
+                        // Show continue section after getting a response
+                        continueSection.style.display = 'block';
                     }
-                    
-                    // Display the response
-                    addSystemMessage(response);
-                    
-                    // Show continue section after getting a response
-                    continueSection.style.display = 'block';
                 } catch (error) {
                     console.error('Error getting response:', error);
                     
@@ -862,7 +903,7 @@
                 });
                 
                 // Create a comprehensive prompt for ChatGPT
-                let prompt = `I want to continue this conversation that was started with GPT-3.5. Please use GPT-4 or better to continue with higher quality and accuracy. Here's the conversation so far:\n\n`;
+                let prompt = `I want to continue this conversation that was started with GPT-4o. Here's the conversation so far:\n\n`;
                 
                 // Format conversation history
                 conversationHistory.forEach(msg => {
@@ -870,10 +911,10 @@
                 });
                 
                 // Add instructions for continuation
-                prompt += `Please continue this conversation where we left off, keeping in mind the context and topic we were discussing. You should respond as if you are the assistant in this conversation, but with enhanced capabilities compared to GPT-3.5 that was used initially.\n\n`;
+                prompt += `Please continue this conversation where we left off, keeping in mind the context and topic we were discussing. You should respond as if you are the assistant in this conversation.\n\n`;
                 
                 // Add next steps instructions
-                prompt += `When you respond, please take into account the entire conversation history above. Your next response should be a direct continuation of this conversation, as if we never stopped talking. You don't need to remind me of what we were discussing, but feel free to provide more detailed or nuanced answers than were possible with GPT-3.5.`;
+                prompt += `When you respond, please take into account the entire conversation history above. Your next response should be a direct continuation of this conversation, as if we never stopped talking. You don't need to remind me of what we were discussing, just continue the natural flow of our conversation.`;
                 
                 promptPreview.value = prompt;
             }
