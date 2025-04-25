@@ -158,7 +158,6 @@
         }
         
         .header-title {
-            flex-grow: 1;
             display: flex;
             align-items: center;
             font-weight: 600;
@@ -173,19 +172,55 @@
         
         .header-controls {
             display: flex;
+            flex-direction: column;
             align-items: center;
             gap: 8px;
         }
-
-        .model-selector, .theme-selector {
-            display: inline-flex;
-            margin-left: 8px;
-            vertical-align: middle;
+        
+        .control-buttons {
+            display: flex;
             align-items: center;
-            position: relative;
-            background-color: var(--dropdown-bg);
-            border-radius: 10px;
-            padding: 0 6px 0 0;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .control-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-light);
+            color: var(--primary-text);
+            border: none;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            gap: 5px;
+        }
+        
+        .control-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .control-btn:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .model-btn, .theme-btn {
+            min-width: 85px;
+        }
+        
+        .hidden-selects {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
         }
         
         .model-dropdown, .theme-dropdown {
@@ -205,20 +240,18 @@
             color: var(--dropdown-text);
         }
         
-        .dropdown-arrow {
-            font-size: 8px;
-            margin-left: -2px;
-            color: var(--dropdown-text);
-            opacity: 0.6;
-            pointer-events: none;
-        }
-        
-        .model-selector:hover, .theme-selector:hover {
-            filter: brightness(0.9);
-        }
-        
-        .model-dropdown:focus, .theme-dropdown:focus {
-            outline: none;
+        .dropdown-visible {
+            display: block !important;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background-color: var(--chat-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            width: 150px;
         }
         
         .reset-btn {
@@ -231,6 +264,7 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
+            margin: 0 auto;
         }
         
         .reset-btn:hover {
@@ -556,27 +590,50 @@
         <div class="chat-header">
             <div class="header-title">
                 <img src="quickgpt-icon.png" alt="QuickGPT" class="app-icon"> QuickGPT 
-                <div class="model-selector">
-                    <select id="modelSelect" class="model-dropdown">
-                        <option value="gpt-4o" selected>GPT-4o</option>
-                        <option value="gpt-4o-mini">GPT-4o-mini</option>
-                        <option value="gpt-3.5-turbo">GPT-3.5</option>
-                    </select>
-                    <span class="dropdown-arrow">▼</span>
-                </div>
             </div>
             <div class="header-controls">
-                <div class="theme-selector">
-                    <select id="themeSelect" class="theme-dropdown" title="Select theme">
+                <div class="control-buttons">
+                    <button id="modelToggleBtn" class="control-btn model-btn" title="Toggle between models">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                        <span id="modelIndicator">Quick</span>
+                    </button>
+                    
+                    <button id="themeToggleBtn" class="control-btn theme-btn" title="Toggle between themes">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <path d="M12 1v2"></path>
+                            <path d="M12 21v2"></path>
+                            <path d="M4.22 4.22l1.42 1.42"></path>
+                            <path d="M18.36 18.36l1.42 1.42"></path>
+                            <path d="M1 12h2"></path>
+                            <path d="M21 12h2"></path>
+                            <path d="M4.22 19.78l1.42-1.42"></path>
+                            <path d="M18.36 5.64l1.42-1.42"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <button class="reset-btn" id="resetBtn">Reset chat</button>
+                
+                <!-- Hidden selects for long press functionality -->
+                <div class="hidden-selects">
+                    <select id="modelSelect" class="model-dropdown" style="display: none;">
+                        <option value="gpt-4o" selected>Quick</option>
+                        <option value="gpt-4o-mini">Very quick</option>
+                    </select>
+                    
+                    <select id="themeSelect" class="theme-dropdown" style="display: none;" title="Select theme">
                         <option value="light">Light</option>
                         <option value="dark">Dark</option>
                         <option value="pastel">Pastel Blue</option>
                         <option value="forest">Forest Green</option>
                         <option value="sunset">Sunset Orange</option>
                     </select>
-                    <span class="dropdown-arrow">▼</span>
                 </div>
-                <button class="reset-btn" id="resetBtn">Reset chat</button>
             </div>
         </div>
         <div class="chat-messages" id="chatMessages"></div>
@@ -655,6 +712,140 @@
             
             // Send button click handler
             sendBtn.addEventListener('click', sendMessage);
+            
+            // Get model and theme toggle buttons
+            const modelToggleBtn = document.getElementById('modelToggleBtn');
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
+            const modelIndicator = document.getElementById('modelIndicator');
+            
+            // Long press detection variables
+            let modelLongPressTimer;
+            let themeLongPressTimer;
+            const longPressDelay = 500; // milliseconds for long press
+            
+            // Initialize model indicator
+            updateModelIndicator();
+            
+            // Model toggle button click (cycle through options)
+            modelToggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Get current index
+                const currentIndex = Array.from(modelSelect.options)
+                    .findIndex(option => option.value === currentModel);
+                
+                // Calculate next index (cycle through options)
+                const nextIndex = (currentIndex + 1) % modelSelect.options.length;
+                
+                // Set the new value
+                modelSelect.selectedIndex = nextIndex;
+                
+                // Trigger the change event manually
+                const changeEvent = new Event('change');
+                modelSelect.dispatchEvent(changeEvent);
+            });
+            
+            // Theme toggle button click (cycle through options)
+            themeToggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Get current index
+                const currentIndex = Array.from(themeSelect.options)
+                    .findIndex(option => option.value === currentTheme);
+                
+                // Calculate next index (cycle through options)
+                const nextIndex = (currentIndex + 1) % themeSelect.options.length;
+                
+                // Set the new value
+                themeSelect.selectedIndex = nextIndex;
+                
+                // Trigger the change event manually
+                const changeEvent = new Event('change');
+                themeSelect.dispatchEvent(changeEvent);
+            });
+            
+            // Long press for model select
+            modelToggleBtn.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                modelLongPressTimer = setTimeout(() => {
+                    showDropdown(modelSelect);
+                }, longPressDelay);
+            });
+            
+            modelToggleBtn.addEventListener('mouseup', function() {
+                clearTimeout(modelLongPressTimer);
+            });
+            
+            modelToggleBtn.addEventListener('mouseleave', function() {
+                clearTimeout(modelLongPressTimer);
+            });
+            
+            // Long press for theme select
+            themeToggleBtn.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                themeLongPressTimer = setTimeout(() => {
+                    showDropdown(themeSelect);
+                }, longPressDelay);
+            });
+            
+            themeToggleBtn.addEventListener('mouseup', function() {
+                clearTimeout(themeLongPressTimer);
+            });
+            
+            themeToggleBtn.addEventListener('mouseleave', function() {
+                clearTimeout(themeLongPressTimer);
+            });
+            
+            // Touch events for mobile devices
+            modelToggleBtn.addEventListener('touchstart', function(e) {
+                modelLongPressTimer = setTimeout(() => {
+                    showDropdown(modelSelect);
+                }, longPressDelay);
+            });
+            
+            modelToggleBtn.addEventListener('touchend', function() {
+                clearTimeout(modelLongPressTimer);
+            });
+            
+            themeToggleBtn.addEventListener('touchstart', function(e) {
+                themeLongPressTimer = setTimeout(() => {
+                    showDropdown(themeSelect);
+                }, longPressDelay);
+            });
+            
+            themeToggleBtn.addEventListener('touchend', function() {
+                clearTimeout(themeLongPressTimer);
+            });
+            
+            // Function to show dropdown
+            function showDropdown(selectElement) {
+                // Position the select element where needed
+                selectElement.style.display = 'block';
+                selectElement.classList.add('dropdown-visible');
+                
+                // Focus the select to show dropdown
+                selectElement.focus();
+                
+                // Hide dropdown when focus is lost
+                selectElement.addEventListener('blur', function onBlur() {
+                    selectElement.style.display = 'none';
+                    selectElement.classList.remove('dropdown-visible');
+                    selectElement.removeEventListener('blur', onBlur);
+                });
+                
+                // Hide dropdown after selection is made
+                selectElement.addEventListener('change', function onChange() {
+                    selectElement.style.display = 'none';
+                    selectElement.classList.remove('dropdown-visible');
+                    selectElement.removeEventListener('change', onChange);
+                });
+            }
+            
+            // Function to update model indicator text
+            function updateModelIndicator() {
+                const selectedOption = modelSelect.options[modelSelect.selectedIndex];
+                modelIndicator.textContent = selectedOption.text;
+            }
             
             // Function to set up quick answer buttons 
             function setupQuickAnswerButtons() {
@@ -808,6 +999,9 @@
                 // Update current model based on selection
                 currentModel = this.value;
                 console.log('Model changed to:', currentModel);
+                
+                // Update the model button text
+                updateModelIndicator();
                 
                 // Show a message about the model change
                 const modelChangeMsg = `Model changed to ${this.options[this.selectedIndex].text}`;
