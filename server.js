@@ -202,7 +202,7 @@ app.post('/api/chat', async (req, res) => {
           timeout: 60000, // 60 seconds timeout
           maxRetries: 3,  // Retry 3 times on failures
           defaultHeaders: {
-            'User-Agent': 'ReplitChatApp/1.0.0'
+            'User-Agent': 'QuickGPT/1.0.0'
           },
           defaultQuery: {
             // Add safety check for repeated requests
