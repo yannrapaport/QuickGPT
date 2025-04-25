@@ -6,19 +6,20 @@
     <title>Chat Simulator</title>
     <style>
         :root {
-            --primary-color: #007bff;
-            --primary-light: #e8f0fe;
-            --background-color: #f6f7f9;
-            --chat-bg: #ffffff;
-            --text-color: #3c4043;
-            --text-secondary: #5f6368;
-            --border-color: #e6e8eb;
-            --button-hover: #0069d9;
-            --input-bg: #ffffff;
-            --timestamp-color: #9aa0a6;
-            --system-color: #202124;
-            --user-color: #1a73e8;
-            --separator-color: #eaecef;
+            --primary-color: #b3d8ff; /* Pastel blue for primary elements */
+            --primary-light: #e9f3ff; /* Lighter pastel blue for backgrounds */
+            --primary-text: #4e5b6d; /* Muted blue-gray for buttons and text */
+            --primary-hover: #a1cfff; /* Slightly darker pastel blue for hover states */
+            --background-color: #f7f9fc; /* Very light blue-gray background */
+            --chat-bg: #ffffff; /* White chat background */
+            --text-color: #4a4a4a; /* Dark gray for text */
+            --text-secondary: #888888; /* Medium gray for secondary text */
+            --border-color: #e8e8e8; /* Light gray for borders */
+            --input-bg: #ffffff; /* White input background */
+            --timestamp-color: #9fa6b0; /* Muted gray for timestamps */
+            --user-bubble-bg: #e9f3ff; /* Light pastel blue for user messages */
+            --system-bubble-bg: #ffffff; /* White for system messages */
+            --separator-color: #f0f1f2; /* Very light gray for separators */
         }
 
         * {
@@ -106,21 +107,21 @@
         }
 
         .user-message {
-            background-color: var(--primary-light);
+            background-color: var(--user-bubble-bg);
             color: var(--text-color);
-            border-radius: 8px;
+            border-radius: 18px;
             padding: 12px 16px;
             position: relative;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            box-shadow: none;
         }
 
         .system-message {
-            background-color: var(--chat-bg);
+            background-color: var(--system-bubble-bg);
             color: var(--text-color);
-            border-radius: 8px;
+            border-radius: 18px;
             padding: 12px 16px;
             position: relative;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            box-shadow: none;
             border: 1px solid var(--border-color);
             line-height: 1.5;
             font-size: 14.5px;
@@ -183,19 +184,28 @@
 
         .continue-btn {
             background-color: var(--primary-color);
-            color: white;
+            color: var(--primary-text);
             border: none;
-            border-radius: 4px;
+            border-radius: 18px;
             padding: 8px 16px;
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
             height: 36px;
+            display: inline-flex;
+            align-items: center;
         }
 
         .continue-btn:hover {
-            background-color: var(--button-hover);
+            background-color: var(--primary-hover);
+        }
+        
+        .continue-actions {
+            display: flex;
+            align-items: center;
+            margin-top: 16px;
+            gap: 10px;
         }
 
         .prompt-preview-container {
@@ -203,19 +213,12 @@
             display: none;
         }
         
-        .prompt-title {
-            font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-        }
-        
         .prompt-preview {
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 8px;
             padding: 12px;
-            height: 200px;
+            height: 150px;
             width: 100%;
             resize: vertical;
             font-family: 'SF Mono', Menlo, Monaco, Consolas, monospace;
@@ -231,20 +234,20 @@
         }
 
         .copy-notification {
-            color: var(--primary-color);
-            font-size: 12px;
-            margin-top: 6px;
-            display: none;
+            color: var(--primary-text);
+            font-size: 13px;
             font-weight: 500;
+            display: none;
         }
 
         .copy-btn {
-            background-color: var(--background-color);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 6px 12px;
-            margin-top: 8px;
-            font-size: 12px;
+            background-color: var(--primary-light);
+            color: var(--primary-text);
+            border: none;
+            border-radius: 18px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
             cursor: pointer;
             display: none;
             transition: all 0.2s;
@@ -273,7 +276,7 @@
             width: 100%;
             padding: 12px 14px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 18px;
             resize: none;
             font-size: 14px;
             min-height: 44px;
@@ -296,30 +299,31 @@
 
         .send-btn {
             background-color: var(--primary-color);
-            color: white;
+            color: var(--primary-text);
             border: none;
-            border-radius: 4px;
+            border-radius: 50%;
             padding: 0;
             width: 36px;
             height: 36px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .send-btn svg {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
         }
 
         .send-btn:hover {
-            background-color: var(--button-hover);
+            background-color: var(--primary-hover);
         }
 
         .send-btn:disabled {
             background-color: var(--border-color);
+            color: #b5b5b5;
             cursor: not-allowed;
         }
 
@@ -370,11 +374,12 @@
                 </svg>
             </button>
             <div class="prompt-preview-container">
-                <div class="prompt-title">Continuation Prompt (Editable):</div>
                 <textarea class="prompt-preview" id="promptPreview" spellcheck="false"></textarea>
+                <div class="continue-actions">
+                    <button class="copy-btn" id="copyBtn">Copy Again</button>
+                    <div class="copy-notification" id="copyNotification">✓ Copied to clipboard</div>
+                </div>
             </div>
-            <div class="copy-notification" id="copyNotification">✓ Copied to clipboard</div>
-            <button class="copy-btn" id="copyBtn">Copy Again</button>
         </div>
         
         <div class="controls-container">
@@ -438,23 +443,43 @@
                 });
             });
             
+            // Rename the button and update the appearance when the prompt is edited
+            promptPreview.addEventListener('input', function() {
+                // Hide the copy notification when editing
+                copyNotification.style.display = 'none';
+                
+                // Make sure the copy button is always visible when editing
+                copyBtn.style.display = 'block';
+                
+                // Rename the continue button to "Copy Again" if needed
+                if (continueBtn.textContent.trim() === 'Continue in ChatGPT') {
+                    continueBtn.innerHTML = 'Copy Again <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: -3px;"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>';
+                }
+            });
+            
             // Continue in ChatGPT button
             continueBtn.addEventListener('click', function() {
                 generateChatGPTPrompt();
                 document.querySelector('.prompt-preview-container').style.display = 'block';
                 copyBtn.style.display = 'block';
                 
+                // Rename the button after first click
+                if (continueBtn.textContent.trim() === 'Continue in ChatGPT') {
+                    continueBtn.innerHTML = 'Copy Again <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; vertical-align: -3px;"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>';
+                }
+                
                 // Automatically copy to clipboard
                 const text = promptPreview.value;
                 navigator.clipboard.writeText(text)
                     .then(() => {
                         // Show notification
-                        copyNotification.style.display = 'block';
-                        copyBtn.textContent = 'Copied!';
+                        copyNotification.style.display = 'inline-block';
                         
-                        setTimeout(() => {
-                            copyBtn.textContent = 'Copy Again';
-                        }, 2000);
+                        // Hide notification if editing happens
+                        promptPreview.addEventListener('input', function hideNotificationOnce() {
+                            copyNotification.style.display = 'none';
+                            promptPreview.removeEventListener('input', hideNotificationOnce);
+                        });
                     })
                     .catch(err => {
                         console.error('Failed to copy: ', err);
@@ -463,15 +488,18 @@
                     });
             });
             
-            // Copy to clipboard button (as a fallback)
+            // Copy Again button
             copyBtn.addEventListener('click', function() {
                 const text = promptPreview.value;
                 navigator.clipboard.writeText(text)
                     .then(() => {
-                        copyBtn.textContent = 'Copied!';
-                        setTimeout(() => {
-                            copyBtn.textContent = 'Copy Again';
-                        }, 2000);
+                        copyNotification.style.display = 'inline-block';
+                        
+                        // Hide notification if editing happens
+                        promptPreview.addEventListener('input', function hideNotificationOnce() {
+                            copyNotification.style.display = 'none';
+                            promptPreview.removeEventListener('input', hideNotificationOnce);
+                        });
                     })
                     .catch(err => {
                         console.error('Failed to copy: ', err);
