@@ -463,30 +463,29 @@
         /* Drawer style continue section */
         .continue-section {
             position: absolute;
-            top: calc(100% + 16px); /* Position below the separator with consistent spacing */
-            left: 50%;
-            transform: translateX(-50%); /* Center horizontally */
-            width: calc(100% - 48px); /* Match the width of chat messages area */
-            max-width: calc(700px - 48px); /* Match container max-width minus padding */
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%; /* Take full width of container */
             background-color: var(--chat-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             z-index: 1000;
             padding: 16px 20px;
+            margin-top: 8px; /* Smaller than padding between suggestion chips and line */
             transition: opacity 0.3s ease, transform 0.3s ease;
             opacity: 0;
             pointer-events: none; /* Prevents clicks when hidden */
-            overflow: hidden;
             box-sizing: border-box;
+            transform: translateY(100%);
             transform-origin: top center;
-            /* Position relative to the chat-container */
-            margin-left: 24px;
         }
         
         .continue-section.visible {
             opacity: 1;
             pointer-events: auto; /* Re-enable clicks when visible */
+            transform: translateY(0);
         }
         
         .drawer-header {
@@ -772,28 +771,28 @@
                     <div class="triangle-up"></div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Drawer-style continue section - positioned relative to the chat-container -->
-        <div class="continue-section" id="continueSection" style="display: none;">
-            <div class="drawer-header">
-                <button class="quit-btn" id="quitBtn" title="Close">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-                <div class="drawer-title">Continue in ChatGPT</div>
-                <button class="clip-btn" id="clipBtn" title="Copy to clipboard">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                    </svg>
-                </button>
-            </div>
-            <div class="prompt-preview-container">
-                <textarea class="prompt-preview" id="promptPreview" placeholder="Conversation summary for ChatGPT..." spellcheck="false"></textarea>
-                <div class="copy-notification" id="copyNotification">✓ Copied to clipboard</div>
+            
+            <!-- Drawer-style continue section - positioned inside separator container -->
+            <div class="continue-section" id="continueSection" style="display: none;">
+                <div class="drawer-header">
+                    <button class="quit-btn" id="quitBtn" title="Close">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                    <div class="drawer-title">Continue in ChatGPT</div>
+                    <button class="clip-btn" id="clipBtn" title="Copy to clipboard">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                    </button>
+                </div>
+                <div class="prompt-preview-container">
+                    <textarea class="prompt-preview" id="promptPreview" placeholder="Conversation summary for ChatGPT..." spellcheck="false"></textarea>
+                    <div class="copy-notification" id="copyNotification">✓ Copied to clipboard</div>
+                </div>
             </div>
         </div>
         
@@ -1103,20 +1102,6 @@
                     continueSection.style.display = 'block';
                     console.log('Set continueSection display to block');
                     
-                    // Get the position of relevant elements
-                    const chatContainer = document.querySelector('.chat-container');
-                    const chatContainerRect = chatContainer.getBoundingClientRect();
-                    const separator = document.getElementById('separatorLine');
-                    const separatorRect = separator.getBoundingClientRect();
-                    
-                    // Calculate proper positioning and size for the drawer
-                    const drawerWidth = Math.min(chatContainerRect.width - 48, 650);
-                    const chatMessagesWidth = document.querySelector('.chat-messages').offsetWidth;
-                    
-                    // Position drawer properly
-                    continueSection.style.position = 'absolute';
-                    continueSection.style.width = `${chatMessagesWidth}px`;
-                    
                     // Generate the prompt content if needed
                     if (promptPreview.value.trim() === '') {
                         console.log('Generating prompt content');
@@ -1129,6 +1114,9 @@
                     // Make the drawer visible with animation
                     console.log('Adding visible class to animate in');
                     continueSection.classList.add('visible');
+                    
+                    // Add listener to handle clicks outside the drawer
+                    document.addEventListener('click', handleOutsideClick);
                 } else {
                     // Hide with animation
                     console.log('Removing visible class to animate out');
@@ -1139,6 +1127,21 @@
                         console.log('Setting display to none');
                         continueSection.style.display = 'none';
                     }, 300); // Match transition duration
+                    
+                    // Remove outside click listener
+                    document.removeEventListener('click', handleOutsideClick);
+                }
+            }
+            
+            // Handle clicks outside the drawer to close it
+            function handleOutsideClick(event) {
+                if (continueSection.classList.contains('visible')) {
+                    const isClickInsideDrawer = continueSection.contains(event.target);
+                    const isClickOnSeparator = separatorLine.contains(event.target);
+                    
+                    if (!isClickInsideDrawer && !isClickOnSeparator) {
+                        toggleContinueDrawer(false);
+                    }
                 }
             }
             
