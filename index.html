@@ -768,6 +768,14 @@
                     
                     // Try the API first, but have a fallback ready
                     try {
+                        // Create a proper messages array for the API
+                        const messagesForAPI = [];
+                        if (currentQuestion) {
+                            messagesForAPI.push({ role: 'user', content: currentQuestion });
+                        }
+                        
+                        console.log('Sending API request with messages:', messagesForAPI);
+                        
                         // API call with timeout (10 seconds)
                         const controller = new AbortController();
                         const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -778,7 +786,7 @@
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify({ messages }),
+                            body: JSON.stringify({ messages: messagesForAPI }),
                             signal: controller.signal
                         });
                         

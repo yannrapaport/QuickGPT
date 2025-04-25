@@ -54,23 +54,30 @@ function generateFallbackResponse(question) {
 // API endpoint for ChatGPT completion
 app.post('/api/chat', async (req, res) => {
   try {
+    console.log('Received request body:', JSON.stringify(req.body));
     const { messages } = req.body;
     
     // Validate request
     if (!messages || !Array.isArray(messages)) {
+      console.error('Invalid messages format:', messages);
       return res.status(400).json({ error: 'Invalid request format. Messages array is required.' });
     }
     
     // Get the latest user message (to create a relevant response)
     const lastUserMessage = messages.filter(msg => msg.role === 'user').pop();
     const userQuestion = lastUserMessage ? lastUserMessage.content : '';
+    console.log('Processing user question:', userQuestion);
     
     // Try to use the OpenAI API if the key is available
-    if (process.env.OPENAI_API_KEY) {
+    const apiKey = process.env.OPENAI_API_KEY;
+    console.log('API Key available:', apiKey ? 'Yes (masked)' : 'No');
+    
+    if (apiKey) {
       try {
         // Initialize the OpenAI client with the API key and improved settings
+        console.log('Creating OpenAI client with API key...');
         const openai = new OpenAI({
-          apiKey: process.env.OPENAI_API_KEY,
+          apiKey: apiKey,
           timeout: 30000, // 30 seconds timeout
           maxRetries: 2,  // Retry twice on failures
           defaultHeaders: {
@@ -100,7 +107,19 @@ app.post('/api/chat', async (req, res) => {
         }
       } catch (apiError) {
         console.error('Error calling OpenAI API:', apiError.message);
-        // Continue to fallback response
+        console.error('Error details:', apiError);
+        
+        // Handle specific error types
+        if (apiError.message.includes('401') || apiError.message.includes('authentication')) {
+          console.error('Authentication error - API key may be invalid');
+          // Continue to fallback response
+        } else if (apiError.message.includes('429') || apiError.message.includes('rate limit')) {
+          console.error('Rate limit exceeded - too many requests');
+          // Continue to fallback response
+        } else {
+          console.error('Other API error occurred');
+          // Continue to fallback response
+        }
       }
     } else {
       console.log('No OpenAI API key found, using fallback response');
