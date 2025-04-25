@@ -80,6 +80,18 @@
             position: relative;
             border-left: 3px solid #64748b;
         }
+        
+        #loading-message {
+            background-color: #f0f0f0;
+            border-left: 3px solid #10a37f;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
 
         .quick-answers {
             display: flex;
@@ -415,12 +427,76 @@
                 continueSection.style.display = 'block';
             }
             
-            // Simulate response (no real API call)
-            function simulateResponse(question) {
-                setTimeout(() => {
-                    const response = `Here is a simulated response to: ${question}`;
-                    addSystemMessage(response);
-                }, 500);
+            // Get response from ChatGPT API
+            async function simulateResponse(question) {
+                try {
+                    // Show a loading indicator
+                    const loadingMessage = "Thinking...";
+                    const loadingElement = document.createElement('div');
+                    loadingElement.className = 'message';
+                    
+                    const loadingMessageElement = document.createElement('div');
+                    loadingMessageElement.className = 'system-message';
+                    loadingMessageElement.textContent = loadingMessage;
+                    loadingMessageElement.id = 'loading-message';
+                    
+                    loadingElement.appendChild(loadingMessageElement);
+                    chatMessages.appendChild(loadingElement);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    
+                    // Prepare messages for API call
+                    const messages = [];
+                    
+                    // Add all previous messages from the chat
+                    document.querySelectorAll('.message').forEach(messageDiv => {
+                        const userMessage = messageDiv.querySelector('.user-message');
+                        const systemMessage = messageDiv.querySelector('.system-message');
+                        
+                        if (userMessage && userMessage.textContent !== question) { // exclude current question
+                            messages.push({role: 'user', content: userMessage.textContent});
+                        } else if (systemMessage && systemMessage.id !== 'loading-message') {
+                            messages.push({role: 'assistant', content: systemMessage.textContent});
+                        }
+                    });
+                    
+                    // Add the current question
+                    messages.push({role: 'user', content: question});
+                    
+                    // Make API call to the server
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ messages }),
+                    });
+                    
+                    // Remove loading message
+                    loadingElement.remove();
+                    
+                    if (!response.ok) {
+                        throw new Error(`API call failed: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    // Display the response
+                    addSystemMessage(data.message.content);
+                } catch (error) {
+                    console.error('Error getting response:', error);
+                    
+                    // Remove loading message if it exists
+                    const loadingElement = document.getElementById('loading-message');
+                    if (loadingElement) {
+                        loadingElement.parentElement.remove();
+                    }
+                    
+                    // Show error message
+                    addSystemMessage(`Sorry, I encountered an error: ${error.message}`);
+                }
             }
             
             // Generate prompt for continuing in ChatGPT
