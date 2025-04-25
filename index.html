@@ -470,10 +470,10 @@
                 sendBtn.disabled = messageInput.value.trim() === '';
             });
             
-            // Handle Enter key to send message
+            // Handle Enter key to send message (improved version)
             messageInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
+                    e.preventDefault(); // Prevent default new line
                     if (messageInput.value.trim() !== '') {
                         sendMessage();
                     }
@@ -794,9 +794,9 @@
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     
                     // Remove loading message
-                    const loadingElement = document.getElementById('loading-message');
-                    if (loadingElement) {
-                        loadingElement.parentElement.parentElement.remove();
+                    const loadingMsg = document.getElementById('loading-message');
+                    if (loadingMsg) {
+                        loadingMsg.parentElement.parentElement.remove();
                     }
                     
                     // Display the response
