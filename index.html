@@ -1060,33 +1060,44 @@
             
             // Separator line click handler to show drawer
             separatorLine.addEventListener('click', function() {
+                console.log('Separator line clicked');
+                console.log('Is active:', separatorLine.classList.contains('active'));
                 if (separatorLine.classList.contains('active')) {
+                    console.log('Attempting to show drawer');
                     toggleContinueDrawer(true);
                 }
             });
             
             // Toggle the continue drawer visibility
             function toggleContinueDrawer(show) {
+                console.log('Toggle drawer called with show:', show);
                 if (show) {
                     // Display the continue section first (but still invisible due to opacity 0)
+                    console.log('Setting display to block');
                     continueSection.style.display = 'block';
                     
                     // Generate the prompt
+                    console.log('Checking prompt content');
                     if (promptPreview.value.trim() === '') {
+                        console.log('Generating prompt content');
                         generateChatGPTPrompt();
                     }
                     
                     // Wait a tiny bit for the browser to register display:block
+                    console.log('Setting timeout for visibility');
                     setTimeout(() => {
                         // Then add the visible class to animate in
+                        console.log('Adding visible class');
                         continueSection.classList.add('visible');
                     }, 10);
                 } else {
                     // Remove the visible class to animate out
+                    console.log('Removing visible class');
                     continueSection.classList.remove('visible');
                     
                     // Wait for animation to complete before hiding
                     setTimeout(() => {
+                        console.log('Setting display to none');
                         continueSection.style.display = 'none';
                     }, 300); // Match transition duration
                 }
