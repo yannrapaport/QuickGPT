@@ -973,29 +973,7 @@
             themeSelect.addEventListener('change', function() {
                 const selectedTheme = this.value;
                 applyTheme(selectedTheme);
-                
-                // Show a message about the theme change
-                const themeChangeMsg = `Theme changed to ${this.options[this.selectedIndex].text}`;
-                const systemNotice = document.createElement('div');
-                systemNotice.className = 'message system-message-container';
-                
-                // Create message content
-                const msgContent = document.createElement('div');
-                msgContent.className = 'message-content';
-                
-                // Create message body
-                const msgBody = document.createElement('div');
-                msgBody.className = 'message-body system-message';
-                msgBody.style.fontStyle = 'italic';
-                msgBody.style.opacity = '0.8';
-                msgBody.textContent = themeChangeMsg;
-                
-                // Assemble the message
-                msgContent.appendChild(msgBody);
-                systemNotice.appendChild(msgContent);
-                
-                chatMessages.appendChild(systemNotice);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+                // No notification message, users can see theme change visually
             });
             
             // Model selector change event
@@ -1004,31 +982,10 @@
                 currentModel = this.value;
                 console.log('Model changed to:', currentModel);
                 
-                // Update the model button text
-                updateModelIndicator();
+                // Update the logo to reflect model change
+                updateLogo();
                 
-                // Show a message about the model change
-                const modelChangeMsg = `Model changed to ${this.options[this.selectedIndex].text}`;
-                const systemNotice = document.createElement('div');
-                systemNotice.className = 'message system-message-container';
-                
-                // Create message content
-                const msgContent = document.createElement('div');
-                msgContent.className = 'message-content';
-                
-                // Create message body
-                const msgBody = document.createElement('div');
-                msgBody.className = 'message-body system-message';
-                msgBody.style.fontStyle = 'italic';
-                msgBody.style.opacity = '0.8';
-                msgBody.textContent = modelChangeMsg;
-                
-                // Assemble the message
-                msgContent.appendChild(msgBody);
-                systemNotice.appendChild(msgContent);
-                
-                chatMessages.appendChild(systemNotice);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+                // No notification message, users can see the logo change
             });
             
             // Reset chat button
