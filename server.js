@@ -32,34 +32,92 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ error: 'Invalid request format. Messages array is required.' });
     }
     
-    // Format messages for OpenAI API
-    const formattedMessages = messages.map(msg => ({
-      role: msg.role,
-      content: msg.content
-    }));
+    // Get the latest user message (to create a relevant response)
+    const lastUserMessage = messages.filter(msg => msg.role === 'user').pop();
+    let userQuestion = lastUserMessage ? lastUserMessage.content : '';
     
-    // Call the OpenAI API
-    const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // Using a more cost-effective model
-      messages: formattedMessages,
-      max_tokens: 500,
-      temperature: 0.7,
+    // Try to use the OpenAI API first (for when we get a working key)
+    try {
+      // Format messages for OpenAI API
+      const formattedMessages = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+      
+      // Call the OpenAI API with chat completions
+      const response = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo", // Using a reliable chat model
+        messages: formattedMessages,
+        max_tokens: 500,
+        temperature: 0.7,
+      });
+      
+      // Extract and return the OpenAI response
+      if (response.choices && response.choices.length > 0) {
+        return res.json({ message: response.choices[0].message });
+      }
+    } catch (apiError) {
+      console.error('Error calling OpenAI API:', apiError);
+      // If API call fails, continue to fallback (don't return error response)
+    }
+    
+    // Fallback to simulated response if OpenAI call fails
+    console.log('Using fallback response mechanism');
+    
+    // Create a simulated response based on the user's message
+    let simulatedResponse = generateFallbackResponse(userQuestion);
+    
+    // Return the simulated response
+    return res.json({ 
+      message: { 
+        role: 'assistant', 
+        content: simulatedResponse 
+      } 
     });
     
-    // Extract and return the assistant's response
-    if (response.choices && response.choices.length > 0) {
-      return res.json({ message: response.choices[0].message });
-    } else {
-      return res.status(500).json({ error: 'No response from OpenAI API' });
-    }
   } catch (error) {
-    console.error('Error calling OpenAI API:', error);
+    console.error('Error in chat endpoint:', error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
     return res.status(500).json({ 
       error: 'Error processing your request',
       details: error.message 
     });
   }
 });
+
+// Function to generate fallback responses
+function generateFallbackResponse(question) {
+  // Basic response templates based on question content
+  if (!question || question.trim() === '') {
+    return "I'm here to help! Feel free to ask me anything.";
+  }
+  
+  // Convert to lowercase for easier matching
+  const lowerQuestion = question.toLowerCase();
+  
+  if (lowerQuestion.includes('hello') || lowerQuestion.includes('hi ')) {
+    return "Hello! I'm your AI assistant. How can I help you today?";
+  }
+  
+  if (lowerQuestion.includes('how are you')) {
+    return "I'm functioning well, thank you for asking! I'm here to assist you with any questions or tasks you might have.";
+  }
+  
+  if (lowerQuestion.includes('weather')) {
+    return "As a simulated response, I don't have access to real-time weather data. When you use the 'Continue in ChatGPT' feature with a valid API key, you can ask about weather and get more useful responses.";
+  }
+  
+  if (lowerQuestion.includes('help') || lowerQuestion.includes('can you')) {
+    return "I'd be happy to help! Currently, I'm running in simulation mode while waiting for a valid API key. You can test the interface and especially the 'Continue in ChatGPT' feature, which will allow you to continue this conversation with the full capabilities of GPT-4.";
+  }
+  
+  if (lowerQuestion.includes('time') || lowerQuestion.includes('date')) {
+    return "I'm a simulated response and don't have access to the current time or date. This is a temporary solution while waiting for a valid API key. Try the 'Continue in ChatGPT' feature to get more accurate responses!";
+  }
+  
+  // Default response
+  return "This is a simulated response while we're waiting for a valid OpenAI API key. Feel free to test the interface, especially the 'Continue in ChatGPT' feature which allows you to take this conversation to the full GPT-4 model for more detailed responses.\n\nOnce you provide a valid API key, you'll get genuine AI-generated responses here instead of this placeholder.";
+}
 
 // Start the server
 app.listen(port, '0.0.0.0', () => {
