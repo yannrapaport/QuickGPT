@@ -479,6 +479,7 @@
             outline: none;
             transition: all 0.2s;
             background-color: var(--input-bg);
+            color: var(--text-color);
         }
 
         .message-input:focus {
@@ -627,10 +628,15 @@
             const backBtn = document.getElementById('backBtn');
             const resetBtn = document.getElementById('resetBtn');
             const modelSelect = document.getElementById('modelSelect');
+            const themeSelect = document.getElementById('themeSelect');
             
             let currentQuestion = '';
             let currentResponse = '';
             let currentModel = 'gpt-4o'; // Default model
+            let currentTheme = localStorage.getItem('quickgpt-theme') || 'light'; // Default theme
+            
+            // Initialize theme from saved preference
+            initTheme();
             
             // Enable/disable send button based on input
             messageInput.addEventListener('input', function() {
@@ -742,6 +748,59 @@
                 
                 // Hide the copy notification
                 copyNotification.style.display = 'none';
+            });
+            
+            // Function to apply selected theme
+            function applyTheme(theme) {
+                // Remove any existing theme
+                document.body.removeAttribute('data-theme');
+                
+                // If theme is not 'light' (default), add the theme attribute
+                if (theme !== 'light') {
+                    document.body.setAttribute('data-theme', theme);
+                }
+                
+                // Save theme preference to localStorage
+                localStorage.setItem('quickgpt-theme', theme);
+                currentTheme = theme;
+            }
+            
+            // Init theme on page load
+            function initTheme() {
+                // Set dropdown to saved theme
+                themeSelect.value = currentTheme;
+                
+                // Apply the saved theme
+                applyTheme(currentTheme);
+            }
+            
+            // Theme selector change event
+            themeSelect.addEventListener('change', function() {
+                const selectedTheme = this.value;
+                applyTheme(selectedTheme);
+                
+                // Show a message about the theme change
+                const themeChangeMsg = `Theme changed to ${this.options[this.selectedIndex].text}`;
+                const systemNotice = document.createElement('div');
+                systemNotice.className = 'message system-message-container';
+                
+                // Create message content
+                const msgContent = document.createElement('div');
+                msgContent.className = 'message-content';
+                
+                // Create message body
+                const msgBody = document.createElement('div');
+                msgBody.className = 'message-body system-message';
+                msgBody.style.fontStyle = 'italic';
+                msgBody.style.opacity = '0.8';
+                msgBody.textContent = themeChangeMsg;
+                
+                // Assemble the message
+                msgContent.appendChild(msgBody);
+                systemNotice.appendChild(msgContent);
+                
+                chatMessages.appendChild(systemNotice);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             });
             
             // Model selector change event
