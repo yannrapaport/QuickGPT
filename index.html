@@ -163,58 +163,80 @@
             font-weight: 600;
         }
         
+        .logo-btn {
+            display: flex;
+            align-items: center;
+            background: none;
+            border: none;
+            color: var(--header-text);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            padding: 0;
+            transition: all 0.2s;
+        }
+        
+        .logo-btn:hover {
+            opacity: 0.8;
+        }
+        
         .app-icon {
-            height: 24px;
-            width: 24px;
+            height: 30px;
+            width: 30px;
             margin-right: 8px;
-            border-radius: 6px;
+            border-radius: 50%;
+        }
+        
+        .header-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
         }
         
         .header-controls {
             display: flex;
-            flex-direction: column;
             align-items: center;
             gap: 8px;
         }
         
-        .control-buttons {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-        
-        .control-btn {
+        .control-btn, .reset-btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: var(--primary-light);
+            background-color: var(--primary-color);
             color: var(--primary-text);
             border: none;
-            border-radius: 20px;
-            padding: 6px 12px;
-            font-size: 13px;
-            font-weight: 500;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
             cursor: pointer;
             transition: all 0.2s;
-            gap: 5px;
+        }
+        
+        .reset-btn {
+            background-color: var(--primary-color);
+            color: var(--primary-text);
+            border-radius: 18px;
+            padding: 0 12px;
+            font-size: 13px;
+            font-weight: 500;
+            width: auto;
+            height: 36px;
         }
         
         .control-btn svg {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
         }
         
-        .control-btn:hover {
+        .control-btn:hover, .reset-btn:hover {
             background-color: var(--primary-hover);
         }
         
-        .control-btn:active {
+        .control-btn:active, .reset-btn:active, .logo-btn:active {
             transform: scale(0.95);
-        }
-        
-        .model-btn, .theme-btn {
-            min-width: 85px;
         }
         
         .hidden-selects {
@@ -252,23 +274,6 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             z-index: 10;
             width: 150px;
-        }
-        
-        .reset-btn {
-            background-color: var(--primary-light);
-            color: var(--primary-text);
-            border: none;
-            border-radius: 18px;
-            padding: 6px 12px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin: 0 auto;
-        }
-        
-        .reset-btn:hover {
-            background-color: var(--primary-hover);
         }
 
         .chat-messages {
@@ -492,7 +497,7 @@
             padding: 16px 24px;
             border-top: 1px solid var(--separator-color);
             background-color: var(--chat-bg);
-            align-items: flex-end;
+            align-items: center;
         }
 
         .input-container {
@@ -503,17 +508,18 @@
 
         .message-input {
             width: 100%;
-            padding: 12px 14px;
+            padding: 9px 14px;
             border: 1px solid var(--border-color);
             border-radius: 18px;
             resize: none;
             font-size: 14px;
-            min-height: 44px;
+            min-height: 36px;
             max-height: 150px;
             outline: none;
             transition: all 0.2s;
             background-color: var(--input-bg);
             color: var(--text-color);
+            line-height: 18px;
         }
 
         .message-input:focus {
@@ -589,35 +595,30 @@
     <div class="chat-container">
         <div class="chat-header">
             <div class="header-title">
-                <img src="quickgpt-icon.png" alt="QuickGPT" class="app-icon"> QuickGPT 
+                <button id="logoToggleBtn" class="logo-btn" title="Toggle between models">
+                    <img id="logoIcon" src="quickgpt-icon-single.png" alt="QuickGPT" class="app-icon">
+                    <span>QuickGPT</span>
+                </button>
             </div>
-            <div class="header-controls">
-                <div class="control-buttons">
-                    <button id="modelToggleBtn" class="control-btn model-btn" title="Toggle between models">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                        </svg>
-                        <span id="modelIndicator">Quick</span>
-                    </button>
-                    
-                    <button id="themeToggleBtn" class="control-btn theme-btn" title="Toggle between themes">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="5"></circle>
-                            <path d="M12 1v2"></path>
-                            <path d="M12 21v2"></path>
-                            <path d="M4.22 4.22l1.42 1.42"></path>
-                            <path d="M18.36 18.36l1.42 1.42"></path>
-                            <path d="M1 12h2"></path>
-                            <path d="M21 12h2"></path>
-                            <path d="M4.22 19.78l1.42-1.42"></path>
-                            <path d="M18.36 5.64l1.42-1.42"></path>
-                        </svg>
-                    </button>
-                </div>
-                
+            
+            <div class="header-center">
                 <button class="reset-btn" id="resetBtn">Reset chat</button>
+            </div>
+            
+            <div class="header-controls">
+                <button id="themeToggleBtn" class="control-btn theme-btn" title="Toggle between themes">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <path d="M12 1v2"></path>
+                        <path d="M12 21v2"></path>
+                        <path d="M4.22 4.22l1.42 1.42"></path>
+                        <path d="M18.36 18.36l1.42 1.42"></path>
+                        <path d="M1 12h2"></path>
+                        <path d="M21 12h2"></path>
+                        <path d="M4.22 19.78l1.42-1.42"></path>
+                        <path d="M18.36 5.64l1.42-1.42"></path>
+                    </svg>
+                </button>
                 
                 <!-- Hidden selects for long press functionality -->
                 <div class="hidden-selects">
@@ -713,21 +714,21 @@
             // Send button click handler
             sendBtn.addEventListener('click', sendMessage);
             
-            // Get model and theme toggle buttons
-            const modelToggleBtn = document.getElementById('modelToggleBtn');
+            // Get logo and theme toggle buttons
+            const logoToggleBtn = document.getElementById('logoToggleBtn');
             const themeToggleBtn = document.getElementById('themeToggleBtn');
-            const modelIndicator = document.getElementById('modelIndicator');
+            const logoIcon = document.getElementById('logoIcon');
             
             // Long press detection variables
-            let modelLongPressTimer;
+            let logoLongPressTimer;
             let themeLongPressTimer;
             const longPressDelay = 500; // milliseconds for long press
             
-            // Initialize model indicator
-            updateModelIndicator();
+            // Update logo based on current model
+            updateLogo();
             
-            // Model toggle button click (cycle through options)
-            modelToggleBtn.addEventListener('click', function(e) {
+            // Logo/model toggle button click (cycle through options)
+            logoToggleBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 
                 // Get current index
@@ -764,20 +765,20 @@
                 themeSelect.dispatchEvent(changeEvent);
             });
             
-            // Long press for model select
-            modelToggleBtn.addEventListener('mousedown', function(e) {
+            // Long press for logo/model select
+            logoToggleBtn.addEventListener('mousedown', function(e) {
                 e.preventDefault();
-                modelLongPressTimer = setTimeout(() => {
+                logoLongPressTimer = setTimeout(() => {
                     showDropdown(modelSelect);
                 }, longPressDelay);
             });
             
-            modelToggleBtn.addEventListener('mouseup', function() {
-                clearTimeout(modelLongPressTimer);
+            logoToggleBtn.addEventListener('mouseup', function() {
+                clearTimeout(logoLongPressTimer);
             });
             
-            modelToggleBtn.addEventListener('mouseleave', function() {
-                clearTimeout(modelLongPressTimer);
+            logoToggleBtn.addEventListener('mouseleave', function() {
+                clearTimeout(logoLongPressTimer);
             });
             
             // Long press for theme select
@@ -797,14 +798,14 @@
             });
             
             // Touch events for mobile devices
-            modelToggleBtn.addEventListener('touchstart', function(e) {
-                modelLongPressTimer = setTimeout(() => {
+            logoToggleBtn.addEventListener('touchstart', function(e) {
+                logoLongPressTimer = setTimeout(() => {
                     showDropdown(modelSelect);
                 }, longPressDelay);
             });
             
-            modelToggleBtn.addEventListener('touchend', function() {
-                clearTimeout(modelLongPressTimer);
+            logoToggleBtn.addEventListener('touchend', function() {
+                clearTimeout(logoLongPressTimer);
             });
             
             themeToggleBtn.addEventListener('touchstart', function(e) {
@@ -841,10 +842,13 @@
                 });
             }
             
-            // Function to update model indicator text
-            function updateModelIndicator() {
-                const selectedOption = modelSelect.options[modelSelect.selectedIndex];
-                modelIndicator.textContent = selectedOption.text;
+            // Function to update logo based on model
+            function updateLogo() {
+                if (currentModel === 'gpt-4o-mini') {
+                    logoIcon.src = 'quickgpt-icon-double.png';
+                } else {
+                    logoIcon.src = 'quickgpt-icon-single.png';
+                }
             }
             
             // Function to set up quick answer buttons 
