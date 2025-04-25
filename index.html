@@ -227,6 +227,7 @@
             line-height: 1.5;
             color: var(--text-color);
             outline: none;
+            margin-bottom: 16px;
         }
         
         .prompt-preview:focus {
@@ -238,6 +239,23 @@
             font-size: 13px;
             font-weight: 500;
             display: none;
+        }
+        
+        .back-btn {
+            background-color: var(--primary-light);
+            color: var(--primary-text);
+            border: none;
+            border-radius: 18px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 16px;
+        }
+        
+        .back-btn:hover {
+            background-color: var(--primary-hover);
         }
 
         .copy-btn {
@@ -373,6 +391,7 @@
             </div>
             <div class="prompt-preview-container">
                 <textarea class="prompt-preview" id="promptPreview" spellcheck="false"></textarea>
+                <button class="back-btn" id="backBtn">Back to conversation</button>
             </div>
         </div>
         
@@ -405,6 +424,7 @@
             const continueBtn = document.getElementById('continueBtn');
             const promptPreview = document.getElementById('promptPreview');
             const copyNotification = document.getElementById('copyNotification');
+            const backBtn = document.getElementById('backBtn');
             
             let currentQuestion = '';
             let currentResponse = '';
@@ -479,6 +499,18 @@
                         // If copy fails, don't show the notification
                         copyNotification.style.display = 'none';
                     });
+            });
+            
+            // Back to conversation button
+            backBtn.addEventListener('click', function() {
+                // Hide the prompt preview container
+                document.querySelector('.prompt-preview-container').style.display = 'none';
+                
+                // Reset the continue button text
+                continueBtn.textContent = 'Continue in ChatGPT';
+                
+                // Hide the copy notification
+                copyNotification.style.display = 'none';
             });
             
             // Send message function
