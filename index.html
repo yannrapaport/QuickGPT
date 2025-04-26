@@ -1472,44 +1472,31 @@
                 toggleInfoPanel();
             });
             
-            // Close info panel button
+            // Close info drawer button
             const closeInfoBtn = document.getElementById('closeInfoBtn');
             closeInfoBtn.addEventListener('click', function() {
-                infoPanel.classList.remove('visible');
+                infoDrawer.classList.remove('visible');
             });
             
-            // Copy info panel data button
+            // Copy info drawer data button
             const copyInfoBtn = document.getElementById('copyInfoBtn');
             copyInfoBtn.addEventListener('click', function() {
-                const infoText = `QuickGPT Info:
-Model: ${infoModel.textContent}
-Theme: ${infoTheme.textContent}
-API Status: ${infoApiStatus.textContent}`;
+                // Get the text directly from the textarea
+                const infoText = infoTextbox.value;
                 
                 navigator.clipboard.writeText(infoText).then(() => {
-                    // Show notification
-                    const copyNotification = document.createElement('div');
-                    copyNotification.textContent = '✓ Copied to clipboard';
-                    copyNotification.className = 'copy-notification';
-                    copyNotification.style.display = 'block';
-                    copyNotification.style.opacity = '1';
-                    
-                    // Append to info panel if not already present
-                    if (!document.querySelector('.info-panel .copy-notification')) {
-                        infoPanel.appendChild(copyNotification);
-                    } else {
-                        document.querySelector('.info-panel .copy-notification').style.display = 'block';
-                        document.querySelector('.info-panel .copy-notification').style.opacity = '1';
-                    }
+                    // Show notification with fade-in effect
+                    infoCopyNotification.style.display = 'inline-block';
+                    // Force a reflow to ensure the transition works
+                    void infoCopyNotification.offsetWidth;
+                    infoCopyNotification.style.opacity = '1';
                     
                     // Hide after delay
                     setTimeout(() => {
-                        if (document.querySelector('.info-panel .copy-notification')) {
-                            document.querySelector('.info-panel .copy-notification').style.opacity = '0';
-                            setTimeout(() => {
-                                document.querySelector('.info-panel .copy-notification').style.display = 'none';
-                            }, 300);
-                        }
+                        infoCopyNotification.style.opacity = '0';
+                        setTimeout(() => {
+                            infoCopyNotification.style.display = 'none';
+                        }, 300);
                     }, 2000);
                 });
             });
@@ -1592,9 +1579,9 @@ API Status: ${infoApiStatus.textContent}`;
                 quickAnswers.style.display = 'none';
                 toggleSeparatorLine(false);
                 
-                // Hide drawer
-                continueSection.classList.remove('visible');
-                continueSection.style.display = 'none';
+                // Hide drawers
+                continueDrawer.classList.remove('visible');
+                infoDrawer.classList.remove('visible');
                 
                 // Reset prompt preview content
                 promptPreview.value = '';
@@ -1724,7 +1711,7 @@ API Status: ${infoApiStatus.textContent}`;
                 toggleSeparatorLine(true);
                 
                 // Hide continue drawer by default until separator is clicked
-                continueSection.style.display = 'none';
+                continueDrawer.classList.remove('visible');
             }
             
             // Get response from ChatGPT API
