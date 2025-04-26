@@ -777,7 +777,7 @@
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
             z-index: 1000;
             padding: 16px 20px;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, height 0.3s ease;
             box-sizing: border-box;
             max-height: 90vh; /* Maximum height capped at 90% of viewport */
             overflow: hidden; /* Prevent content overflow */
@@ -836,17 +836,13 @@
             padding: 12px 14px;
         }
         
-        /* Clean layout for info items in drawer */
+        /* Clean layout for info items in drawer - no separators as requested */
         .info-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--separator-color);
-        }
-        
-        .info-item:last-child {
-            border-bottom: none;
+            padding: 4px 0; /* reduced padding for more compact layout */
+            /* border-bottom removed as requested */
         }
         
         .info-label {
@@ -859,14 +855,15 @@
             font-weight: 600;
         }
         
-        /* Textbox for editable drawer */
+        /* Textbox for editable drawer - with dynamic height */
         .drawer-textbox {
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 12px 14px;
             width: 100%;
-            height: 100%;
+            min-height: 150px; /* Minimum height */
+            height: auto; /* Allow dynamic height */
             resize: none;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             white-space: pre-wrap;
@@ -875,7 +872,7 @@
             color: var(--text-color);
             outline: none;
             overflow-y: auto;
-            max-height: calc(90vh - 140px); /* Ensures scrollbar appears in textbox */
+            max-height: calc(90vh - 140px); /* Maximum height capped */
             flex: 1;
         }
         
@@ -1116,7 +1113,7 @@
         
         <!-- Top drawer for app info - unified drawer component -->
         <div class="drawer drawer--top" id="infoDrawer">
-            <div class="drawer-title">QuickGPT Info</div>
+            <div class="drawer-title">QuickGPT info</div>
             <div class="drawer-content">
                 <div class="drawer-text" id="infoText"></div>
             </div>
