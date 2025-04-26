@@ -1237,7 +1237,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const messageInput = document.getElementById('messageInput');
-            const sendBtn = document.getElementById('sendBtn');
             const chatMessages = document.getElementById('chatMessages');
             const quickAnswers = document.getElementById('quickAnswers');
             const continueDrawer = document.getElementById('continueDrawer');
@@ -1853,17 +1852,6 @@
                 currentModel = this.value;
                 console.log('Model changed to:', currentModel);
                 
-                // Update the tooltip for the model switch button
-                if (modelSwitchBtn) {
-                    // Find the corresponding option to get the display name
-                    const selectedOption = Array.from(modelSelect.options)
-                        .find(option => option.value === currentModel);
-                    
-                    if (selectedOption) {
-                        modelSwitchBtn.title = selectedOption.textContent + " (Current model)";
-                    }
-                }
-                
                 // Mark the active model in the dropdown
                 if (modelOptions) {
                     modelOptions.forEach(option => {
@@ -2040,7 +2028,6 @@
                 simulateResponse(message);
                 
                 messageInput.value = '';
-                sendBtn.disabled = true;
                 messageInput.focus();
             }
             
