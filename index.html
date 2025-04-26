@@ -372,22 +372,48 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            margin: 2rem auto;
             max-width: 90%;
             color: var(--text-color);
             opacity: 0.9;
+            /* Center vertically in the chat area */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
         }
         
         .welcome-message h2 {
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 600;
         }
         
         .welcome-message p {
-            margin: 0.25rem 0;
-            font-size: 1rem;
+            margin: 0.5rem 0;
+            font-size: 1.2rem;
             line-height: 1.5;
+        }
+        
+        /* Custom input for welcome screen */
+        .welcome-input {
+            display: flex;
+            margin-top: 2rem;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 20px;
+            padding: 0.75rem 1.25rem;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        
+        .welcome-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--primary-color);
         }
 
         .quick-answers-container {
@@ -741,9 +767,11 @@
         <div class="chat-messages" id="chatMessages">
             <!-- Welcome message -->
             <div class="welcome-message">
-                <h2>Hello 👋 Welcome to QuickGPT</h2>
-                <p>Quick conversations. Instant answers. Nothing saved.</p>
-                <p>What would you like to ask today?</p>
+                <h2>Welcome to QuickGPT</h2>
+                <p>Quick conversations.</p>
+                <p>Instant answers.</p>
+                <p>Nothing saved.</p>
+                <input type="text" class="welcome-input" placeholder="What would you like to ask today?" id="welcomeInput">
             </div>
         </div>
         
@@ -820,6 +848,8 @@
             const resetBtn = document.getElementById('resetBtn');
             const modelSelect = document.getElementById('modelSelect');
             const themeSelect = document.getElementById('themeSelect');
+            const welcomeInput = document.getElementById('welcomeInput');
+            const controlsContainer = document.querySelector('.controls-container');
             
             let currentQuestion = '';
             let currentResponse = '';
@@ -1220,9 +1250,10 @@
                 // Clear messages and add welcome message
                 chatMessages.innerHTML = `
                     <div class="welcome-message">
-                        <h2>Hello 👋 Welcome to QuickGPT</h2>
-                        <p>Quick conversations. Instant answers. Nothing saved.</p>
-                        <p>What would you like to ask today?</p>
+                        <h2>Welcome to QuickGPT</h2>
+                        <p>Quick conversations.</p>
+                        <p>Instant answers.</p>
+                        <p>Nothing saved.</p>
                     </div>
                 `;
                 
