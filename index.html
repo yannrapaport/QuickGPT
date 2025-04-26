@@ -298,32 +298,23 @@
             max-width: 85%;
         }
 
-        .message-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 4px;
-        }
-
-        .message-sender {
-            font-weight: 500;
-            font-size: 14px;
-            margin-right: 8px;
-        }
-
         .message-time {
             color: var(--timestamp-color);
             font-size: 12px;
+            margin-top: 5px;
+            display: inline-block;
+            padding: 0 8px;
         }
 
         .user-message-container {
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
+            align-items: flex-start;
+            justify-content: flex-end;
+            flex-direction: row-reverse;
         }
 
         .system-message-container {
             display: flex;
-            flex-direction: column;
             align-items: flex-start;
         }
 
@@ -422,7 +413,7 @@
         
         .separator-line.active {
             background-color: var(--primary-color);
-            height: 2px;
+            height: 1px;
         }
         
         /* Chip with upward triangle for easier clicking */
@@ -1251,28 +1242,18 @@
                 const messageContent = document.createElement('div');
                 messageContent.className = 'message-content';
                 
-                // Create message header with sender and time
-                const messageHeader = document.createElement('div');
-                messageHeader.className = 'message-header';
-                
-                const messageSender = document.createElement('div');
-                messageSender.className = 'message-sender';
-                messageSender.textContent = 'Me';
-                
+                // Create time element
                 const messageTime = document.createElement('div');
                 messageTime.className = 'message-time';
                 messageTime.textContent = getFormattedTime();
-                
-                messageHeader.appendChild(messageSender);
-                messageHeader.appendChild(messageTime);
                 
                 // Create message body
                 const messageBody = document.createElement('div');
                 messageBody.className = 'message-body user-message';
                 messageBody.textContent = message;
                 
-                // Assemble the message
-                messageContent.appendChild(messageHeader);
+                // Assemble the message with time on the left
+                messageElement.appendChild(messageTime);
                 messageContent.appendChild(messageBody);
                 messageElement.appendChild(messageContent);
                 
@@ -1309,20 +1290,10 @@
                 const messageContent = document.createElement('div');
                 messageContent.className = 'message-content';
                 
-                // Create message header with sender and time
-                const messageHeader = document.createElement('div');
-                messageHeader.className = 'message-header';
-                
-                const messageSender = document.createElement('div');
-                messageSender.className = 'message-sender';
-                messageSender.textContent = 'Assistant';
-                
+                // Create time element
                 const messageTime = document.createElement('div');
                 messageTime.className = 'message-time';
                 messageTime.textContent = getFormattedTime();
-                
-                messageHeader.appendChild(messageSender);
-                messageHeader.appendChild(messageTime);
                 
                 // Create message body
                 const messageBody = document.createElement('div');
@@ -1331,10 +1302,10 @@
                 // Use innerHTML to allow for formatted content
                 messageBody.innerHTML = formatMessageText(message);
                 
-                // Assemble the message
-                messageContent.appendChild(messageHeader);
+                // Assemble the message with time on the right
                 messageContent.appendChild(messageBody);
                 messageElement.appendChild(messageContent);
+                messageElement.appendChild(messageTime);
                 
                 chatMessages.appendChild(messageElement);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -1359,20 +1330,10 @@
                     const messageContent = document.createElement('div');
                     messageContent.className = 'message-content';
                     
-                    // Create message header with sender and time
-                    const messageHeader = document.createElement('div');
-                    messageHeader.className = 'message-header';
-                    
-                    const messageSender = document.createElement('div');
-                    messageSender.className = 'message-sender';
-                    messageSender.textContent = 'Assistant';
-                    
+                    // Create time element
                     const messageTime = document.createElement('div');
                     messageTime.className = 'message-time';
                     messageTime.textContent = getFormattedTime();
-                    
-                    messageHeader.appendChild(messageSender);
-                    messageHeader.appendChild(messageTime);
                     
                     // Create message body
                     const loadingMessageElement = document.createElement('div');
@@ -1380,10 +1341,10 @@
                     loadingMessageElement.textContent = loadingMessage;
                     loadingMessageElement.id = 'loading-message';
                     
-                    // Assemble the message
-                    messageContent.appendChild(messageHeader);
+                    // Assemble the message with time on the right
                     messageContent.appendChild(loadingMessageElement);
                     loadingElement.appendChild(messageContent);
+                    loadingElement.appendChild(messageTime);
                     
                     chatMessages.appendChild(loadingElement);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
