@@ -207,6 +207,27 @@
             display: flex;
             justify-content: flex-start;
             margin-left: 20px;
+            position: relative;
+        }
+        
+        /* Header line styles - glows and is clickable */
+        .header-line {
+            position: absolute;
+            height: 2px;
+            background-color: var(--primary-color);
+            width: 100%;
+            bottom: -17px; /* Position at the bottom of header */
+            left: 0;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 8px var(--primary-color);
+        }
+        
+        .header-line:hover {
+            opacity: 1;
+            box-shadow: 0 0 12px var(--primary-color);
+            height: 3px;
         }
         
         .header-controls {
@@ -592,7 +613,7 @@
             border-color: var(--primary-color);
         }
         
-        /* Separator line between chat and controls */
+        /* Separator line between chat and controls - glows and is clickable */
         .separator-line {
             height: 1px;
             width: 100%;
@@ -601,54 +622,20 @@
             transition: all 0.3s ease;
             position: relative;
             z-index: 999;
+            cursor: pointer;
         }
         
         .separator-line.active {
-            background-color: var(--separator-color);
-            height: 1px;
+            background-color: var(--primary-color);
+            height: 2px;
+            opacity: 0.7;
+            box-shadow: 0 0 8px var(--primary-color);
         }
         
-        /* Ellipsis chip for easier clicking - positioned in the middle */
-        .separator-chip {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: var(--separator-color);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 2px 12px;
-            min-width: 40px;
-            height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .triangle-up {
-            width: 0;
-            height: 0;
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-bottom: 10px solid var(--text-color);
-        }
-        
-        .triangle-down {
-            width: 0;
-            height: 0;
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-top: 10px solid var(--text-color);
-        }
-        
-        .separator-line.active .separator-chip {
-            background-color: var(--separator-color);
+        .separator-line.active:hover {
             opacity: 1;
-            pointer-events: auto;
+            box-shadow: 0 0 12px var(--primary-color);
+            height: 3px;
         }
 
         /* Drawer style continue section */
@@ -878,21 +865,14 @@
         <div class="chat-header">
             <div class="header-title">
                 <button id="logoToggleBtn" class="logo-btn" title="Toggle between models">
-                    <div id="logoContainer" class="logo-container">
-                        <!-- Logo removed, will be updated later -->
-                    </div>
                     <span>QuickGPT</span>
                 </button>
             </div>
             
             <div class="header-center" style="position: relative;">
-                <!-- Info drawer chip -->
-                <div class="drawer-chip-container" id="infoDrawerChip">
-                    <div class="drawer-chip">
-                        <div class="triangle-down"></div>
-                    </div>
-                </div>
-                <!-- Info panel that shows when drawer chip is clicked -->
+                <!-- Header line that glows and is clickable to open the info panel -->
+                <div class="header-line" id="headerLine" title="Click for app info"></div>
+                <!-- Info panel that shows when the header line is clicked -->
                 <div class="info-panel" id="infoPanel">
                     <div class="info-panel-title">QuickGPT Info</div>
                     <div class="info-content">
@@ -1002,12 +982,8 @@
         
         <!-- Container for separator line and drawer to maintain proper positioning -->
         <div class="separator-container" style="position: relative; width: 100%;">
-            <!-- Separator line that glows when a conversation is in progress -->
-            <div class="separator-line" id="separatorLine">
-                <div class="separator-chip">
-                    <div class="triangle-up"></div>
-                </div>
-            </div>
+            <!-- Separator line that glows when a conversation is in progress and is clickable -->
+            <div class="separator-line" id="separatorLine" title="Click to continue in ChatGPT"></div>
             
             <!-- Drawer-style continue section - positioned inside separator container -->
             <div class="continue-section" id="continueSection" style="display: none;">
@@ -1065,7 +1041,7 @@
             const modelSwitchBtn = document.getElementById('modelSwitchBtn');
             
             // Info panel elements
-            const infoDrawerChip = document.getElementById('infoDrawerChip');
+            const headerLine = document.getElementById('headerLine');
             const infoPanel = document.getElementById('infoPanel');
             const infoModel = document.getElementById('infoModel');
             const infoTheme = document.getElementById('infoTheme');
