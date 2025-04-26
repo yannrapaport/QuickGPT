@@ -470,8 +470,7 @@
         .model-dropdown-menu {
             position: absolute;
             top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 0;
             margin-top: 6px;
             background-color: var(--chat-bg);
             border: 1px solid var(--border-color);
@@ -485,14 +484,14 @@
             max-height: 80vh;
             overflow-y: auto;
             opacity: 0;
-            transform: translateX(-50%) translateY(-10px);
+            transform: translateY(-10px);
             transition: opacity 0.2s, transform 0.2s;
         }
         
         .model-dropdown-menu.visible {
             display: flex;
             opacity: 1;
-            transform: translateX(-50%) translateY(0);
+            transform: translateY(0);
         }
         
         .model-option {
@@ -1054,7 +1053,7 @@
     <div class="chat-container">
         <div class="chat-header">
             <div class="header-title">
-                <button id="logoToggleBtn" class="logo-btn" title="Toggle between models">
+                <button id="logoToggleBtn" class="logo-btn" title="Switch Model">
                     <img src="quickgpt-logo-transparent.png" alt="QuickGPT Logo" class="app-logo">
                     <span>QuickGPT</span>
                 </button>
@@ -1071,47 +1070,40 @@
                     </svg>
                 </button>
                 
-                <div class="model-switcher">
-                    <button id="modelSwitchBtn" class="model-switcher-button" title="Switch Model">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-                        </svg>
-                    </button>
-                    
-                    <div id="modelDropdownMenu" class="model-dropdown-menu">
-                        <div class="model-option" data-model="gpt-4.1">
-                            <div class="model-name">
-                                <span class="model-title">GPT-4.1</span>
-                                <span class="model-description">Latest and most capable model</span>
-                            </div>
-                            <span class="model-badge model-badge-new">New</span>
+                <!-- Model dropdown menu relocated to be attached to the logo -->
+                <div id="modelDropdownMenu" class="model-dropdown-menu">
+                    <div class="model-option" data-model="gpt-4.1">
+                        <div class="model-name">
+                            <span class="model-title">GPT-4.1</span>
+                            <span class="model-description">Latest and most capable model</span>
                         </div>
-                        <div class="model-option" data-model="gpt-4o">
-                            <div class="model-name">
-                                <span class="model-title">GPT-4o</span>
-                                <span class="model-description">Smart and balanced</span>
-                            </div>
-                            <span class="model-badge model-badge-default">Default</span>
+                        <span class="model-badge model-badge-new">New</span>
+                    </div>
+                    <div class="model-option" data-model="gpt-4o">
+                        <div class="model-name">
+                            <span class="model-title">GPT-4o</span>
+                            <span class="model-description">Smart and balanced</span>
                         </div>
-                        <div class="model-option" data-model="gpt-4-turbo">
-                            <div class="model-name">
-                                <span class="model-title">GPT-4 Turbo</span>
-                                <span class="model-description">Fast with strong reasoning</span>
-                            </div>
+                        <span class="model-badge model-badge-default">Default</span>
+                    </div>
+                    <div class="model-option" data-model="gpt-4-turbo">
+                        <div class="model-name">
+                            <span class="model-title">GPT-4 Turbo</span>
+                            <span class="model-description">Fast with strong reasoning</span>
                         </div>
-                        <div class="model-option" data-model="gpt-4">
-                            <div class="model-name">
-                                <span class="model-title">GPT-4</span>
-                                <span class="model-description">Original GPT-4 model</span>
-                            </div>
+                    </div>
+                    <div class="model-option" data-model="gpt-4">
+                        <div class="model-name">
+                            <span class="model-title">GPT-4</span>
+                            <span class="model-description">Original GPT-4 model</span>
                         </div>
-                        <div class="model-option" data-model="gpt-3.5-turbo">
-                            <div class="model-name">
-                                <span class="model-title">GPT-3.5 Turbo</span>
-                                <span class="model-description">Fastest responses</span>
-                            </div>
-                            <span class="model-badge model-badge-faster">Faster</span>
+                    </div>
+                    <div class="model-option" data-model="gpt-3.5-turbo">
+                        <div class="model-name">
+                            <span class="model-title">GPT-3.5 Turbo</span>
+                            <span class="model-description">Fastest responses</span>
                         </div>
+                        <span class="model-badge model-badge-faster">Faster</span>
                     </div>
                 </div>
                 
@@ -1262,7 +1254,7 @@
             const themeSelect = document.getElementById('themeSelect');
             const welcomeInput = document.getElementById('welcomeInput');
             const controlsContainer = document.querySelector('.controls-container');
-            const modelSwitchBtn = document.getElementById('modelSwitchBtn');
+            // No longer using separate model switch button
             
             // Drawer elements
             const headerLine = document.getElementById('headerLine');
@@ -1350,24 +1342,7 @@
                     // No fallback needed as logo container has been removed
                 });
             
-            // Logo/model toggle button click (cycle through options)
-            logoToggleBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Get current index
-                const currentIndex = Array.from(modelSelect.options)
-                    .findIndex(option => option.value === currentModel);
-                
-                // Calculate next index (cycle through options)
-                const nextIndex = (currentIndex + 1) % modelSelect.options.length;
-                
-                // Set the new value
-                modelSelect.selectedIndex = nextIndex;
-                
-                // Trigger the change event manually
-                const changeEvent = new Event('change');
-                modelSelect.dispatchEvent(changeEvent);
-            });
+            // Logo button click event is now handled by the toggleModelDropdown function
             
             // Theme toggle button click (cycle through options)
             themeToggleBtn.addEventListener('click', function(e) {
@@ -1518,9 +1493,6 @@
                             opt.classList.remove('active'));
                         this.classList.add('active');
                         
-                        // Set tooltip to just "Switch Model"
-                        modelSwitchBtn.title = "Switch Model";
-                        
                         // Update hidden select used by the application logic
                         modelSelect.value = modelValue;
                         
@@ -1561,14 +1533,14 @@
             
             // Function to close model dropdown when clicking outside
             function closeModelDropdown(e) {
-                if (!modelDropdownMenu.contains(e.target) && !modelSwitchBtn.contains(e.target)) {
+                if (!modelDropdownMenu.contains(e.target) && !logoToggleBtn.contains(e.target)) {
                     toggleModelDropdown(false);
                     document.removeEventListener('click', closeModelDropdown);
                 }
             }
             
-            // Model switch button click (show dropdown)
-            modelSwitchBtn.addEventListener('click', function(e) {
+            // Logo button click now toggles model dropdown
+            logoToggleBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 toggleModelDropdown();
