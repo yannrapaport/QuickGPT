@@ -655,6 +655,12 @@
             50% { opacity: 1; }
             100% { opacity: 0.6; }
         }
+        
+        /* Animation for generating summary */
+        .drawer-textbox.generating {
+            animation: pulse 1.5s infinite;
+            color: var(--primary-color);
+        }
 
         .message-body {
             font-size: 14.5px;
@@ -777,7 +783,7 @@
         /* Separator line between chat and controls - glows and is clickable - matching the header line */
         .separator-line {
             position: relative;
-            height: 3px; /* Increased from 2px to 3px for better visibility */
+            height: 3px; /* Consistent 3px height for all glowing lines */
             width: 100%;
             background-color: var(--primary-color);
             margin: 0;
@@ -785,7 +791,7 @@
             z-index: 999;
             cursor: pointer;
             opacity: 0; /* Initially invisible */
-            box-shadow: 0 0 12px var(--primary-color); /* Increased blur radius from 8px to 12px */
+            box-shadow: 0 0 12px var(--primary-color); /* Consistent glow effect */
             transform: translateY(10px); /* Start slightly below for animation */
             pointer-events: none; /* Initially not interactive */
         }
@@ -813,7 +819,7 @@
             padding: 16px 20px;
             transition: transform 0.3s ease, height 0.3s ease;
             box-sizing: border-box;
-            height: auto; /* Allow natural height based on content */
+            height: 90vh; /* Fixed height at 90% of viewport */
             max-height: 90vh; /* Maximum height capped at 90% of viewport */
             overflow-y: auto; /* Add scrollbar only when needed */
             opacity: 0;
@@ -898,8 +904,8 @@
             border-radius: 12px;
             padding: 12px 14px;
             width: 100%;
-            min-height: 120px; /* Reasonable minimum height */
-            height: auto; /* Allow natural height based on content */
+            min-height: 250px; /* Increased height for better visibility */
+            height: calc(90vh - 120px); /* Take up most of the drawer height */
             resize: none;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             white-space: pre-wrap;
@@ -2394,8 +2400,9 @@
             }
             
             async function generateChatGPTPrompt() {
-                // First, show a loading message in the prompt preview
+                // First, show a loading message in the prompt preview with animation
                 promptPreview.value = "Generating summary...";
+                promptPreview.classList.add('generating');
                 
                 // Get all conversation messages
                 const messages = document.querySelectorAll('.message');
@@ -2439,8 +2446,9 @@
                         // Format the complete prompt with summary and continuation instructions
                         let prompt = `Summary of our conversation:\n\n${data.summary}\n\n---\n\n${data.continuationPrompt}`;
                         
-                        // Update the prompt preview
+                        // Update the prompt preview and remove generating class
                         promptPreview.value = prompt;
+                        promptPreview.classList.remove('generating');
                     } else {
                         // If API call fails, show error and fall back to local summary generation
                         console.error('Failed to generate summary via API:', await response.text());

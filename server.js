@@ -459,20 +459,46 @@ app.post('/api/generate-summary', async (req, res) => {
     const selectedModel = selectBestAvailableModel(modelPreference[0], availableModels);
     console.log(`Using model for summary generation: ${selectedModel}`);
     
+    // Extract the last 3 exchanges (up to 6 messages) to focus the summary on
+    const lastThreeExchanges = [];
+    let userMsgCount = 0;
+    let assistantMsgCount = 0;
+    
+    // Work backward from the end of the conversation
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === 'user') {
+        userMsgCount++;
+      } else if (messages[i].role === 'assistant') {
+        assistantMsgCount++;
+      }
+      
+      // Add this message to our list
+      lastThreeExchanges.unshift(messages[i]);
+      
+      // Stop when we have 3 user messages and their corresponding assistant responses
+      if (userMsgCount >= 3 && assistantMsgCount >= Math.min(3, userMsgCount)) {
+        break;
+      }
+    }
+    
+    // If we have less than 3 exchanges, use whatever messages we have
+    const messagesToSummarize = lastThreeExchanges.length > 0 ? lastThreeExchanges : messages;
+    
     // Craft the message for the summary generation prompt
     const systemPrompt = `
 You are tasked with creating a brief, concise summary of a conversation. 
-The summary should capture the essential points discussed, without unnecessary details.
-Focus on the main topics and the most recent exchange.
+Focus on the last 3 exchanges as requested by the user.
+The summary should capture only the essential points from recent messages.
+
 The output should be in a simple format with:
-1. A short overview of main topics (1-2 sentences max)
-2. The most recent exchange (last question and answer)
+1. A very brief context (1 sentence max)
+2. Summary of the recent exchanges (focusing on the last 3 exchanges)
 
 Keep your summary very concise - it should fit comfortably in a small text area.
 Do not include any explanations or meta-commentary about the summary itself.
 
-IMPORTANT: Always ensure that your summary reflects the ENTIRE conversation up to its most recent state.
-DO NOT focus only on earlier exchanges - include information from the most recent messages.
+IMPORTANT: Focus specifically on the most recent 3 exchanges in the conversation.
+Limit your summary to just what was discussed in these recent messages.
 `;
 
     // Make the API call for summary generation
@@ -480,7 +506,7 @@ DO NOT focus only on earlier exchanges - include information from the most recen
       model: selectedModel,
       messages: [
         { role: 'system', content: systemPrompt },
-        ...messages // Pass the conversation history
+        ...messagesToSummarize // Pass only the last 3 exchanges
       ],
       max_tokens: 250,
       temperature: 0.7
