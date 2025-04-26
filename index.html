@@ -1055,7 +1055,7 @@
         <div class="chat-header">
             <div class="header-title">
                 <button id="logoToggleBtn" class="logo-btn" title="Toggle between models">
-                    <img src="quickgpt-logo.png" alt="QuickGPT Logo" class="app-logo">
+                    <img src="quickgpt-logo-new.png" alt="QuickGPT Logo" class="app-logo">
                     <span>QuickGPT</span>
                 </button>
             </div>
@@ -1072,8 +1072,7 @@
                 </button>
                 
                 <div class="model-switcher">
-                    <button id="modelSwitchBtn" class="model-switcher-button" title="Switch model">
-                        <span id="currentModelName">Quick</span>
+                    <button id="modelSwitchBtn" class="model-switcher-button" title="Quick (Current model)">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="6 9 12 15 18 9"></polyline>
                         </svg>
@@ -1161,7 +1160,7 @@
                 <div class="welcome-text">
                     <span class="title">Welcome to QuickGPT 👋</span>
                     <div class="welcome-logo">
-                        <img src="quickgpt-logo.png" alt="QuickGPT Logo" class="app-logo">
+                        <img src="quickgpt-logo-new.png" alt="QuickGPT Logo" class="app-logo">
                     </div>
                     <span class="subtitle">
                         Quick conversations.
@@ -1369,7 +1368,6 @@
             
             // Variables for new model switcher
             const modelDropdownMenu = document.getElementById('modelDropdownMenu');
-            const currentModelName = document.getElementById('currentModelName');
             const modelOptions = document.querySelectorAll('.model-option');
             
             // Add click event to each model option
@@ -1382,8 +1380,8 @@
                     modelOptions.forEach(opt => opt.classList.remove('active'));
                     this.classList.add('active');
                     
-                    // Update the current model display
-                    currentModelName.textContent = modelTitle;
+                    // Update the tooltip to show current model
+                    modelSwitchBtn.title = modelTitle + " (Current model)";
                     
                     // Update hidden select used by the application logic
                     modelSelect.value = modelValue;
@@ -1714,14 +1712,14 @@
                 currentModel = this.value;
                 console.log('Model changed to:', currentModel);
                 
-                // Update the model name in the dropdown button
-                if (currentModelName) {
+                // Update the tooltip for the model switch button
+                if (modelSwitchBtn) {
                     // Find the corresponding option to get the display name
                     const selectedOption = Array.from(modelSelect.options)
                         .find(option => option.value === currentModel);
                     
                     if (selectedOption) {
-                        currentModelName.textContent = selectedOption.textContent;
+                        modelSwitchBtn.title = selectedOption.textContent + " (Current model)";
                     }
                 }
                 
