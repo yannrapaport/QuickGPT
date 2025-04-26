@@ -310,7 +310,9 @@
             display: flex;
             align-items: flex-start;
             justify-content: flex-end;
-            flex-direction: row-reverse;
+            flex-direction: row;
+            text-align: right;
+            margin-left: auto;
         }
 
         .system-message-container {
@@ -383,16 +385,17 @@
             width: 100%;
         }
         
-        .welcome-message h2 {
+        .welcome-text {
             margin-bottom: 1.5rem;
-            font-size: 1.8rem;
-            font-weight: 600;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            text-align: center;
         }
         
-        .welcome-message p {
-            margin: 0.5rem 0;
-            font-size: 1.2rem;
-            line-height: 1.5;
+        .welcome-input-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
         
         /* Custom input for welcome screen */
@@ -465,12 +468,12 @@
             height: 1px;
         }
         
-        /* Chip with upward triangle for easier clicking */
+        /* Chip with upward triangle for easier clicking - positioned in the middle */
         .separator-chip {
             position: absolute;
-            top: -12px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             background-color: var(--separator-color);
             border-radius: 12px;
             padding: 3px 10px;
@@ -572,7 +575,7 @@
             border: 1px solid var(--border-color);
             border-radius: 18px;
             padding: 12px 14px;
-            height: 120px;
+            height: 150px; /* Increased height */
             width: 100%;
             resize: none;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -765,13 +768,20 @@
             </div>
         </div>
         <div class="chat-messages" id="chatMessages">
-            <!-- Welcome message -->
+            <!-- Welcome message with the new format -->
             <div class="welcome-message">
-                <h2>Welcome to QuickGPT</h2>
-                <p>Quick conversations.</p>
-                <p>Instant answers.</p>
-                <p>Nothing saved.</p>
-                <input type="text" class="welcome-input" placeholder="What would you like to ask today?" id="welcomeInput">
+                <div class="welcome-text">
+                    Welcome to QuickGPT
+                    <br>
+                    Quick conversations
+                    <br>
+                    Instant answers
+                    <br>
+                    Nothing saved
+                </div>
+                <div class="welcome-input-container">
+                    <input type="text" class="welcome-input" placeholder="What would you like to ask today?" id="welcomeInput">
+                </div>
             </div>
         </div>
         
@@ -1266,14 +1276,21 @@
             
             // Reset chat button
             resetBtn.addEventListener('click', function() {
-                // Clear messages and add welcome message
+                // Clear messages and add welcome message with specific formatting
                 chatMessages.innerHTML = `
                     <div class="welcome-message">
-                        <h2>Welcome to QuickGPT</h2>
-                        <p>Quick conversations.</p>
-                        <p>Instant answers.</p>
-                        <p>Nothing saved.</p>
-                        <input type="text" class="welcome-input" placeholder="What would you like to ask today?" id="welcomeInput">
+                        <div class="welcome-text">
+                            Welcome to QuickGPT
+                            <br>
+                            Quick conversations
+                            <br>
+                            Instant answers
+                            <br>
+                            Nothing saved
+                        </div>
+                        <div class="welcome-input-container">
+                            <input type="text" class="welcome-input" placeholder="What would you like to ask today?" id="welcomeInput">
+                        </div>
                     </div>
                 `;
                 
@@ -1373,10 +1390,10 @@
                 messageBody.className = 'message-body user-message';
                 messageBody.textContent = message;
                 
-                // Assemble the message with time on the left
-                messageElement.appendChild(messageTime);
+                // Assemble the message with time on the left (WhatsApp style)
                 messageContent.appendChild(messageBody);
                 messageElement.appendChild(messageContent);
+                messageElement.appendChild(messageTime);
                 
                 chatMessages.appendChild(messageElement);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
