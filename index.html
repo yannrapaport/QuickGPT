@@ -1272,6 +1272,7 @@
             let currentResponse = '';
             let currentModel = localStorage.getItem('quickgpt-model') || 'gpt-4o'; // Default model with localStorage preference
             let currentTheme = localStorage.getItem('quickgpt-theme') || 'light'; // Default theme
+            let conversationStarted = false; // Track if conversation has started to show bottom separator
             
             // Initialize theme from saved preference
             initTheme();
@@ -1719,8 +1720,18 @@
             // Toggle the visibility of the separator line when conversation starts
             function toggleSeparatorLine(show) {
                 if (show) {
-                    separatorLine.classList.add('active');
+                    // Set conversation started flag to true once we've shown the separator
+                    // and don't show it again until the conversation has properly started
+                    if (!conversationStarted) {
+                        conversationStarted = true;
+                    }
+                    
+                    // Only add the active class if conversation has started
+                    if (conversationStarted) {
+                        separatorLine.classList.add('active');
+                    }
                 } else {
+                    // If resetting the app, also hide the line
                     separatorLine.classList.remove('active');
                 }
             }
@@ -1970,6 +1981,9 @@
             
             // Reset chat button
             resetBtn.addEventListener('click', function() {
+                // Reset conversation state - will prevent bottom line from showing immediately
+                conversationStarted = false;
+                
                 // Clear messages and add welcome message with specific formatting
                 chatMessages.innerHTML = `
                     <div class="welcome-message">
@@ -2017,6 +2031,8 @@
                 document.querySelectorAll('.quick-answers').forEach(qa => {
                     qa.style.display = 'none';
                 });
+                
+                // Hide the separator line by removing active class
                 toggleSeparatorLine(false);
                 
                 // Hide drawers
