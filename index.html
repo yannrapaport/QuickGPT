@@ -1072,24 +1072,43 @@
                 </button>
                 
                 <div class="model-switcher">
-                    <button id="modelSwitchBtn" class="model-switcher-button" title="Quick (Current model)">
+                    <button id="modelSwitchBtn" class="model-switcher-button" title="Switch Model">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 12 15 18 9"></polyline>
+                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
                         </svg>
                     </button>
                     
                     <div id="modelDropdownMenu" class="model-dropdown-menu">
+                        <div class="model-option" data-model="gpt-4.1">
+                            <div class="model-name">
+                                <span class="model-title">GPT-4.1</span>
+                                <span class="model-description">Latest and most capable model</span>
+                            </div>
+                            <span class="model-badge model-badge-new">New</span>
+                        </div>
                         <div class="model-option" data-model="gpt-4o">
                             <div class="model-name">
-                                <span class="model-title">Quick</span>
-                                <span class="model-description">GPT-4o - Smart and balanced</span>
+                                <span class="model-title">GPT-4o</span>
+                                <span class="model-description">Smart and balanced</span>
                             </div>
                             <span class="model-badge model-badge-default">Default</span>
                         </div>
-                        <div class="model-option" data-model="gpt-4o-mini">
+                        <div class="model-option" data-model="gpt-4-turbo">
                             <div class="model-name">
-                                <span class="model-title">Very quick</span>
-                                <span class="model-description">GPT-4o-mini - Faster responses</span>
+                                <span class="model-title">GPT-4 Turbo</span>
+                                <span class="model-description">Fast with strong reasoning</span>
+                            </div>
+                        </div>
+                        <div class="model-option" data-model="gpt-4">
+                            <div class="model-name">
+                                <span class="model-title">GPT-4</span>
+                                <span class="model-description">Original GPT-4 model</span>
+                            </div>
+                        </div>
+                        <div class="model-option" data-model="gpt-3.5-turbo">
+                            <div class="model-name">
+                                <span class="model-title">GPT-3.5 Turbo</span>
+                                <span class="model-description">Fastest responses</span>
                             </div>
                             <span class="model-badge model-badge-faster">Faster</span>
                         </div>
@@ -1113,8 +1132,11 @@
                 <!-- Hidden selects for long press functionality -->
                 <div class="hidden-selects">
                     <select id="modelSelect" class="model-dropdown" style="display: none;">
-                        <option value="gpt-4o" selected>Quick</option>
-                        <option value="gpt-4o-mini">Very quick</option>
+                        <option value="gpt-4.1">GPT-4.1</option>
+                        <option value="gpt-4o" selected>GPT-4o</option>
+                        <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                        <option value="gpt-4">GPT-4</option>
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
                     </select>
                     
                     <select id="themeSelect" class="theme-dropdown" style="display: none;" title="Select theme">

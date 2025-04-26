@@ -168,6 +168,113 @@ function generateFallbackResponse(question) {
   return "This is a simulated response while we're waiting for a valid OpenAI API key. Feel free to test the interface, especially the 'Continue in ChatGPT' feature which allows you to take this conversation to the full GPT-4 model for more detailed responses.\n\nOnce you provide a valid API key, you'll get genuine AI-generated responses here instead of this placeholder.";
 }
 
+// API endpoint to retrieve available models
+app.get('/api/models', async (req, res) => {
+  try {
+    // Get the API key
+    const apiKey = process.env.OPENAI_API_KEY;
+    
+    if (apiKey && apiKey.startsWith('sk-')) {
+      // Initialize the OpenAI client with the API key
+      const openai = new OpenAI({
+        apiKey: apiKey,
+        timeout: 30000,
+        maxRetries: 2
+      });
+      
+      // Get the available models
+      const response = await openai.models.list();
+      
+      // Filter for chat models that we want to support
+      const supportedModels = response.data
+        .filter(model => {
+          const id = model.id;
+          return id.includes('gpt-4') || id.includes('gpt-3.5-turbo');
+        })
+        .map(model => model.id);
+      
+      // Check for our specific model sequence
+      const modelPriority = ['gpt-4.1', 'gpt-4o', 'gpt-4-turbo', 'gpt-4', 'gpt-3.5-turbo'];
+      
+      // Filter models based on availability and priority
+      const availableModels = modelPriority.filter(model => 
+        supportedModels.includes(model) || 
+        // Handle special case for models with versions
+        supportedModels.some(m => m.startsWith(`${model}-`))
+      );
+      
+      return res.json({ models: availableModels });
+    } else {
+      // If no API key, return default models
+      return res.json({ 
+        models: ['gpt-4o', 'gpt-3.5-turbo'],
+        simulated: true
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching models:', error);
+    // Return a reasonable default in case of error
+    return res.json({ 
+      models: ['gpt-4o', 'gpt-3.5-turbo'],
+      error: error.message 
+    });
+  }
+});
+
+// Function to select best available model based on preference with fallback
+function selectBestAvailableModel(requestedModel, availableModels) {
+  // If the exact requested model is available, use it
+  if (availableModels.includes(requestedModel)) {
+    return requestedModel;
+  }
+  
+  // Check if a version of the requested model is available
+  const matchingVersions = availableModels.filter(m => m.startsWith(`${requestedModel}-`));
+  if (matchingVersions.length > 0) {
+    // Sort to get the latest version (assumes version format is consistent)
+    return matchingVersions.sort().pop();
+  }
+  
+  // Define the fallback order
+  const fallbackOrder = ['gpt-4.1', 'gpt-4o', 'gpt-4-turbo', 'gpt-4', 'gpt-3.5-turbo'];
+  
+  // Find the requested model's position in the fallback order
+  const requestedIndex = fallbackOrder.indexOf(requestedModel);
+  
+  if (requestedIndex !== -1) {
+    // Try models of equal or lesser preference
+    for (let i = requestedIndex; i < fallbackOrder.length; i++) {
+      const fallbackModel = fallbackOrder[i];
+      if (availableModels.includes(fallbackModel)) {
+        return fallbackModel;
+      }
+      
+      // Check for versioned models
+      const matchingFallbacks = availableModels.filter(m => m.startsWith(`${fallbackModel}-`));
+      if (matchingFallbacks.length > 0) {
+        return matchingFallbacks.sort().pop();
+      }
+    }
+    
+    // If no fallback found after the requested model, try models with higher preference
+    for (let i = requestedIndex - 1; i >= 0; i--) {
+      const fallbackModel = fallbackOrder[i];
+      if (availableModels.includes(fallbackModel)) {
+        return fallbackModel;
+      }
+      
+      // Check for versioned models
+      const matchingFallbacks = availableModels.filter(m => m.startsWith(`${fallbackModel}-`));
+      if (matchingFallbacks.length > 0) {
+        return matchingFallbacks.sort().pop();
+      }
+    }
+  }
+  
+  // If all else fails, return the first available model or gpt-3.5-turbo as the ultimate fallback
+  return availableModels[0] || 'gpt-3.5-turbo';
+}
+
 // API endpoint for ChatGPT completion
 app.post('/api/chat', async (req, res) => {
   try {
@@ -180,17 +287,34 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ error: 'Invalid request format. Messages array is required.' });
     }
     
-    // Default to gpt-4o if no model specified
-    const selectedModel = model || "gpt-4o";
-    console.log('Using model:', selectedModel);
+    // Get API key and available models
+    const apiKey = process.env.OPENAI_API_KEY;
+    let availableModels = ['gpt-4o', 'gpt-3.5-turbo']; // Default fallback models
+    
+    if (apiKey && apiKey.startsWith('sk-')) {
+      try {
+        const openaiForModels = new OpenAI({ apiKey, timeout: 10000, maxRetries: 1 });
+        const modelResponse = await openaiForModels.models.list();
+        availableModels = modelResponse.data
+          .filter(m => m.id.includes('gpt-'))
+          .map(m => m.id);
+        console.log('Available models:', availableModels);
+      } catch (modelError) {
+        console.error('Error fetching models, using defaults:', modelError.message);
+      }
+    }
+    
+    // Select the best model based on requested model and available models
+    const requestedModel = model || 'gpt-4o';
+    const selectedModel = selectBestAvailableModel(requestedModel, availableModels);
+    console.log(`Requested model: ${requestedModel}, Selected model: ${selectedModel}`);
     
     // Get the latest user message (to create a relevant response)
     const lastUserMessage = messages.filter(msg => msg.role === 'user').pop();
     const userQuestion = lastUserMessage ? lastUserMessage.content : '';
     console.log('Processing user question:', userQuestion);
     
-    // Try to use the OpenAI API if the key is available
-    const apiKey = process.env.OPENAI_API_KEY;
+    // Check API key availability
     console.log('API Key available:', apiKey ? 'Yes (masked)' : 'No');
     
     if (apiKey && apiKey.startsWith('sk-')) {
