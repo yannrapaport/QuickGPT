@@ -745,7 +745,12 @@
             </div>
             
             <div class="header-center">
-                <!-- Empty center section -->
+                <!-- Info drawer chip -->
+                <div class="drawer-chip-container" id="infoDrawerChip">
+                    <div class="drawer-chip">
+                        <div class="triangle-down"></div>
+                    </div>
+                </div>
             </div>
             
             <div class="header-controls">
@@ -755,6 +760,10 @@
                         <line x1="15" y1="9" x2="9" y2="15"></line>
                         <line x1="9" y1="9" x2="15" y2="15"></line>
                     </svg>
+                </button>
+                
+                <button id="modelSwitchBtn" class="control-btn model-btn" title="Switch model">
+                    <img src="model-switch-button.png" alt="Switch Model" width="24" height="24">
                 </button>
                 
                 <button id="themeToggleBtn" class="control-btn theme-btn" title="Toggle between themes">
@@ -875,6 +884,7 @@
             const themeSelect = document.getElementById('themeSelect');
             const welcomeInput = document.getElementById('welcomeInput');
             const controlsContainer = document.querySelector('.controls-container');
+            const modelSwitchBtn = document.getElementById('modelSwitchBtn');
             
             let currentQuestion = '';
             let currentResponse = '';
@@ -991,6 +1001,25 @@
                 // Trigger the change event manually
                 const changeEvent = new Event('change');
                 themeSelect.dispatchEvent(changeEvent);
+            });
+            
+            // Model switch button click (cycle through options)
+            modelSwitchBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Get current index
+                const currentIndex = Array.from(modelSelect.options)
+                    .findIndex(option => option.value === currentModel);
+                
+                // Calculate next index (cycle through options)
+                const nextIndex = (currentIndex + 1) % modelSelect.options.length;
+                
+                // Set the new value
+                modelSelect.selectedIndex = nextIndex;
+                
+                // Trigger the change event manually
+                const changeEvent = new Event('change');
+                modelSelect.dispatchEvent(changeEvent);
             });
             
             // Long press for logo/model select
