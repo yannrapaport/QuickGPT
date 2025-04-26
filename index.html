@@ -779,11 +779,19 @@
             transition: all 0.3s ease;
             z-index: 999;
             cursor: pointer;
-            opacity: 0.8; /* Increased from 0.7 to 0.8 for better visibility */
+            opacity: 0; /* Initially invisible */
             box-shadow: 0 0 12px var(--primary-color); /* Increased blur radius from 8px to 12px */
+            transform: translateY(10px); /* Start slightly below for animation */
+            pointer-events: none; /* Initially not interactive */
         }
         
-        .separator-line:hover {
+        .separator-line.active {
+            opacity: 0.8; /* Visible when active */
+            transform: translateY(0); /* Normal position when active */
+            pointer-events: auto; /* Interactive when active */
+        }
+        
+        .separator-line.active:hover {
             opacity: 1; /* Full opacity on hover */
             box-shadow: 0 0 15px var(--primary-color); /* Increased blur radius on hover */
         }
