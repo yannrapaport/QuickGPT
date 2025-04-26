@@ -1344,35 +1344,26 @@
             function toggleContinueDrawer(show) {
                 console.log('Toggle drawer called with show:', show);
                 if (show) {
-                    // First ensure the element is in the DOM with display block
-                    continueSection.style.display = 'block';
-                    console.log('Set continueSection display to block');
-                    
                     // Generate the prompt content if needed
                     if (promptPreview.value.trim() === '') {
                         console.log('Generating prompt content');
                         generateChatGPTPrompt();
                     }
                     
-                    // Force a reflow before adding the visible class
-                    void continueSection.offsetHeight;
-                    
                     // Make the drawer visible with animation
                     console.log('Adding visible class to animate in');
-                    continueSection.classList.add('visible');
+                    continueDrawer.classList.add('visible');
+                    
+                    // Focus and select the text for easy copying
+                    promptPreview.focus();
+                    promptPreview.select();
                     
                     // Add listener to handle clicks outside the drawer
                     document.addEventListener('click', handleOutsideClick);
                 } else {
                     // Hide with animation
                     console.log('Removing visible class to animate out');
-                    continueSection.classList.remove('visible');
-                    
-                    // Remove from DOM after animation completes
-                    setTimeout(() => {
-                        console.log('Setting display to none');
-                        continueSection.style.display = 'none';
-                    }, 300); // Match transition duration
+                    continueDrawer.classList.remove('visible');
                     
                     // Remove outside click listener
                     document.removeEventListener('click', handleOutsideClick);
@@ -1381,8 +1372,8 @@
             
             // Handle clicks outside the drawer to close it
             function handleOutsideClick(event) {
-                if (continueSection.classList.contains('visible')) {
-                    const isClickInsideDrawer = continueSection.contains(event.target);
+                if (continueDrawer.classList.contains('visible')) {
+                    const isClickInsideDrawer = continueDrawer.contains(event.target);
                     const isClickOnSeparator = separatorLine.contains(event.target);
                     
                     if (!isClickInsideDrawer && !isClickOnSeparator) {
@@ -1529,7 +1520,12 @@ API Status: ${infoApiStatus.textContent}`;
                 updateInfoPanel();
                 
                 // Toggle visibility
-                infoPanel.classList.toggle('visible');
+                infoDrawer.classList.toggle('visible');
+                
+                // If drawer is now visible, focus on the text for easier reading
+                if (infoDrawer.classList.contains('visible')) {
+                    infoTextbox.focus();
+                }
             }
             
             // Function to update info panel content
