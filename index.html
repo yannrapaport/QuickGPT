@@ -589,7 +589,7 @@
             color: var(--timestamp-color);
             font-size: 12px;
             margin-top: 5px;
-            display: inline-block;
+            display: none; /* Hide timestamps as requested */
             padding: 0 8px;
         }
 
@@ -739,9 +739,9 @@
             flex-wrap: wrap;
             align-items: center;
             gap: 8px;
-            margin-top: 20px;
+            margin-top: 16px; /* Reduced from 20px as requested for 16px margin */
             margin-bottom: 20px;
-            padding: 0 24px;
+            padding: 0;
             width: 100%;
         }
 
@@ -1051,9 +1051,7 @@
                 padding: 12px;
             }
             
-            .quick-answers {
-                padding: 0 15px;
-            }
+            /* No extra padding needed for quick answers on mobile */
             
             .chat-container {
                 height: 95vh;
@@ -1184,7 +1182,7 @@
             <!-- Welcome message with the new format -->
             <div class="welcome-message">
                 <div class="welcome-text">
-                    <span class="title">Welcome to QuickGPT 👋</span>
+                    <span class="title">Welcome to QuickGPT</span>
                     <div class="welcome-logo">
                         <img src="quickgpt-logo-transparent.png" alt="QuickGPT Logo" class="app-logo">
                     </div>
@@ -2093,7 +2091,7 @@
                 const messageContent = document.createElement('div');
                 messageContent.className = 'message-content';
                 
-                // Create time element
+                // Create time element (still created but hidden via CSS)
                 const messageTime = document.createElement('div');
                 messageTime.className = 'message-time';
                 messageTime.textContent = getFormattedTime();
@@ -2103,7 +2101,7 @@
                 messageBody.className = 'message-body user-message';
                 messageBody.textContent = message;
                 
-                // Assemble the message with time first, then bubble
+                // Assemble the message with time first (hidden), then bubble
                 messageElement.appendChild(messageTime);
                 messageContent.appendChild(messageBody);
                 messageElement.appendChild(messageContent);
@@ -2141,7 +2139,7 @@
                 const messageContent = document.createElement('div');
                 messageContent.className = 'message-content';
                 
-                // Create time element
+                // Create time element (still created but hidden via CSS)
                 const messageTime = document.createElement('div');
                 messageTime.className = 'message-time';
                 messageTime.textContent = getFormattedTime();
@@ -2153,7 +2151,7 @@
                 // Use innerHTML to allow for formatted content
                 messageBody.innerHTML = formatMessageText(message);
                 
-                // Assemble the message with time first, then bubble
+                // Assemble the message with time first (hidden), then bubble
                 messageElement.appendChild(messageTime);
                 messageContent.appendChild(messageBody);
                 messageElement.appendChild(messageContent);
@@ -2181,7 +2179,7 @@
                     const messageContent = document.createElement('div');
                     messageContent.className = 'message-content';
                     
-                    // Create time element
+                    // Create time element (still created but hidden via CSS)
                     const messageTime = document.createElement('div');
                     messageTime.className = 'message-time';
                     messageTime.textContent = getFormattedTime();
@@ -2192,7 +2190,7 @@
                     loadingMessageElement.textContent = loadingMessage;
                     loadingMessageElement.id = 'loading-message';
                     
-                    // Assemble the message with time first, then bubble
+                    // Assemble the message with time first (hidden), then bubble
                     loadingElement.appendChild(messageTime);
                     messageContent.appendChild(loadingMessageElement);
                     loadingElement.appendChild(messageContent);
