@@ -800,8 +800,9 @@
             padding: 16px 20px;
             transition: transform 0.3s ease, height 0.3s ease;
             box-sizing: border-box;
+            height: auto; /* Allow natural height based on content */
             max-height: 90vh; /* Maximum height capped at 90% of viewport */
-            overflow: hidden; /* Prevent content overflow */
+            overflow-y: auto; /* Add scrollbar only when needed */
             opacity: 0;
             pointer-events: none; /* Prevents clicks when hidden */
             display: flex;
@@ -846,6 +847,7 @@
             margin-bottom: 16px;
             display: flex;
             flex-direction: column;
+            overflow-y: auto; /* Allow scrolling within the content area when needed */
         }
         
         /* Text content for info drawer (non-textbox version) */
@@ -883,8 +885,8 @@
             border-radius: 12px;
             padding: 12px 14px;
             width: 100%;
-            min-height: 150px; /* Minimum height */
-            height: auto; /* Allow dynamic height */
+            min-height: 120px; /* Reasonable minimum height */
+            height: auto; /* Allow natural height based on content */
             resize: none;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             white-space: pre-wrap;
@@ -892,9 +894,9 @@
             line-height: 1.5;
             color: var(--text-color);
             outline: none;
-            overflow-y: auto;
-            max-height: calc(90vh - 140px); /* Maximum height capped */
-            flex: 1;
+            overflow-y: auto; /* Scrollbar only when needed */
+            flex: 1; /* Expand to fill available space */
+            box-sizing: border-box; /* Include padding in size calculations */
         }
         
         .drawer-textbox:focus {
