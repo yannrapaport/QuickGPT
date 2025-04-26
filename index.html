@@ -1097,7 +1097,6 @@
             // Get logo and theme toggle buttons
             const logoToggleBtn = document.getElementById('logoToggleBtn');
             const themeToggleBtn = document.getElementById('themeToggleBtn');
-            const logoContainer = document.getElementById('logoContainer');
             
             // Long press detection variables
             let logoLongPressTimer;
@@ -1125,8 +1124,7 @@
                 })
                 .catch(error => {
                     console.error('Error loading SVG logos:', error);
-                    // Fallback - keep logo container empty as requested
-                    logoContainer.innerHTML = '';
+                    // No fallback needed as logo container has been removed
                 });
             
             // Logo/model toggle button click (cycle through options)
@@ -1263,10 +1261,10 @@
                 });
             }
             
-            // Function to update logo based on model - currently disabled as logos have been removed
+            // Function to update logo based on model - removed as requested
             function updateLogo() {
                 // Logo functionality removed as requested
-                logoContainer.innerHTML = '';
+                // Nothing to do here since the logo container has been removed
             }
             
             // Function to set up quick answer buttons 
@@ -1478,8 +1476,8 @@
                 // No notification message, users can see the logo change
             });
             
-            // Info drawer chip click handler
-            infoDrawerChip.addEventListener('click', function() {
+            // Header line click handler
+            headerLine.addEventListener('click', function() {
                 toggleInfoPanel();
             });
             
