@@ -739,9 +739,10 @@
             flex-wrap: wrap;
             align-items: center;
             gap: 8px;
-            margin-top: 16px;
-            margin-bottom: 16px;
+            margin-top: 20px;
+            margin-bottom: 20px;
             padding: 0 24px;
+            width: 100%;
         }
 
         .quick-answers {
@@ -749,6 +750,7 @@
             flex-wrap: wrap;
             gap: 8px;
             flex-grow: 1;
+            justify-content: flex-start;
         }
 
         .quick-answer-btn {
@@ -1188,12 +1190,7 @@
                     <input type="text" class="welcome-input" placeholder="What would you like to ask today?" id="welcomeInput">
                 </div>
             </div>
-        </div>
-        
-        <div class="quick-answers-container">
-            <div class="quick-answers" id="quickAnswers" style="display: none;">
-                <!-- Quick answer buttons will be dynamically inserted here -->
-            </div>
+            <!-- Quick answer suggestions will now be added dynamically after the last message -->
         </div>
         
         <!-- Container for separator line - maintains position -->
@@ -1635,37 +1632,71 @@
             // Function to set up quick answer buttons 
             function setupQuickAnswerButtons() {
                 document.querySelectorAll('.quick-answer-btn').forEach(button => {
-                    button.addEventListener('click', function() {
+                    // Remove existing event listeners if any
+                    const oldButton = button.cloneNode(true);
+                    button.parentNode.replaceChild(oldButton, button);
+                    
+                    // Add fresh event listener
+                    oldButton.addEventListener('click', function() {
                         const text = this.getAttribute('data-text');
                         addUserMessage(text);
                         simulateResponse(text);
+                        
+                        // Remove the quick answers container from the parent message
+                        const container = this.closest('.quick-answers-container');
+                        if (container) {
+                            container.remove();
+                        }
                     });
                 });
             }
             
             // Function to update quick answer buttons with new suggestions
             function updateQuickAnswers(suggestions) {
-                // Clear existing buttons
-                quickAnswers.innerHTML = '';
+                // Get the last message element in the chat
+                const messages = document.querySelectorAll('.message');
+                const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
                 
-                // Create new buttons based on suggestions
-                if (suggestions && Array.isArray(suggestions) && suggestions.length > 0) {
+                // Check if we have valid suggestions and a message to attach them to
+                if (suggestions && Array.isArray(suggestions) && suggestions.length > 0 && lastMessage) {
+                    // Create or get the quick answers container
+                    let quickAnswersContainer = lastMessage.querySelector('.quick-answers-container');
+                    
+                    // If it doesn't exist, create it
+                    if (!quickAnswersContainer) {
+                        quickAnswersContainer = document.createElement('div');
+                        quickAnswersContainer.className = 'quick-answers-container';
+                        
+                        const quickAnswersDiv = document.createElement('div');
+                        quickAnswersDiv.className = 'quick-answers';
+                        quickAnswersDiv.id = 'quickAnswers';
+                        
+                        quickAnswersContainer.appendChild(quickAnswersDiv);
+                        
+                        // Append after the last message
+                        lastMessage.appendChild(quickAnswersContainer);
+                    }
+                    
+                    // Find the quick answers div
+                    const quickAnswersDiv = quickAnswersContainer.querySelector('.quick-answers');
+                    
+                    // Clear existing buttons
+                    quickAnswersDiv.innerHTML = '';
+                    
+                    // Create new buttons based on suggestions
                     suggestions.forEach(suggestion => {
                         const button = document.createElement('button');
                         button.className = 'quick-answer-btn';
                         button.setAttribute('data-text', suggestion);
                         button.textContent = suggestion;
-                        quickAnswers.appendChild(button);
+                        quickAnswersDiv.appendChild(button);
                     });
                     
                     // Add event listeners to new buttons
                     setupQuickAnswerButtons();
                     
                     // Show quick answers section
-                    quickAnswers.style.display = 'flex';
-                } else {
-                    // Hide quick answers if none available
-                    quickAnswers.style.display = 'none';
+                    quickAnswersDiv.style.display = 'flex';
                 }
             }
             
