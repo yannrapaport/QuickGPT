@@ -265,7 +265,7 @@
             justify-content: center;
             transition: all 0.3s ease;
             position: absolute;
-            bottom: -10px; /* Position slightly below the bottom edge of header */
+            top: calc(100% - 10px); /* Position at the bottom of the header */
             left: 50%;
             transform: translateX(-50%); /* Center horizontally */
             z-index: 5;
@@ -860,7 +860,7 @@
                 </button>
             </div>
             
-            <div class="header-center">
+            <div class="header-center" style="position: relative;">
                 <!-- Info drawer chip -->
                 <div class="drawer-chip-container" id="infoDrawerChip">
                     <div class="drawer-chip">
