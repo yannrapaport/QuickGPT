@@ -1488,10 +1488,10 @@
             // Copy info drawer data button
             const copyInfoBtn = document.getElementById('copyInfoBtn');
             copyInfoBtn.addEventListener('click', function() {
-                // Get the text directly from the textarea
-                const infoText = infoTextbox.value;
+                // Get the text directly from the div
+                const infoContent = infoText.textContent;
                 
-                navigator.clipboard.writeText(infoText).then(() => {
+                navigator.clipboard.writeText(infoContent).then(() => {
                     // Show notification with fade-in effect
                     infoCopyNotification.style.display = 'inline-block';
                     // Force a reflow to ensure the transition works
@@ -1516,24 +1516,21 @@
                 // Toggle visibility
                 infoDrawer.classList.toggle('visible');
                 
-                // If drawer is now visible, focus on the text for easier reading
-                if (infoDrawer.classList.contains('visible')) {
-                    infoTextbox.focus();
-                }
+                // No need to focus on div since it's not interactive
             }
             
             // Function to update info panel content
             function updateInfoPanel() {
-                if (infoTextbox) {
+                if (infoText) {
                     const modelName = currentModel === 'gpt-4o' ? 'Quick' : 'Very quick';
                     const themeName = currentTheme.charAt(0).toUpperCase() + currentTheme.slice(1);
                     const apiStatus = document.body.hasAttribute('data-api-error') ? 'Disconnected' : 'Connected';
                     
-                    // Format the information in a clean, readable format
-                    const infoText = `Model: ${modelName}\nTheme: ${themeName}\nAPI Status: ${apiStatus}`;
+                    // Format the information in a clean, readable format with HTML line breaks
+                    const formattedInfo = `Model: ${modelName}<br>Theme: ${themeName}<br>API Status: ${apiStatus}`;
                     
-                    // Update the textarea content
-                    infoTextbox.value = infoText;
+                    // Update the div content using innerHTML to preserve formatting
+                    infoText.innerHTML = formattedInfo;
                 }
             }
             
