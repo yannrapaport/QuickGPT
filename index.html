@@ -1762,11 +1762,13 @@
             function toggleContinueDrawer(show) {
                 console.log('Toggle drawer called with show:', show);
                 if (show) {
-                    // Generate the prompt content if needed
-                    if (promptPreview.value.trim() === '') {
-                        console.log('Generating prompt content');
-                        generateChatGPTPrompt();
-                    }
+                    // Always generate a fresh prompt content based on the current conversation
+                    // This ensures we always use the latest conversation state
+                    console.log('Generating fresh prompt content');
+                    // Clear any existing content first
+                    promptPreview.value = '';
+                    // Generate new content
+                    generateChatGPTPrompt();
                     
                     // Make the drawer visible with animation
                     console.log('Adding visible class to animate in');

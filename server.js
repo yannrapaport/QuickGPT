@@ -470,6 +470,9 @@ The output should be in a simple format with:
 
 Keep your summary very concise - it should fit comfortably in a small text area.
 Do not include any explanations or meta-commentary about the summary itself.
+
+IMPORTANT: Always ensure that your summary reflects the ENTIRE conversation up to its most recent state.
+DO NOT focus only on earlier exchanges - include information from the most recent messages.
 `;
 
     // Make the API call for summary generation
