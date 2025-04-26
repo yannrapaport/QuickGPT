@@ -468,15 +468,18 @@
             height: 1px;
         }
         
-        /* Chip with upward triangle for easier clicking - positioned in the middle */
+        /* Ellipsis chip for easier clicking - positioned in the middle */
         .separator-chip {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: var(--separator-color);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 3px 10px;
+            padding: 2px 12px;
+            min-width: 40px;
+            height: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -486,12 +489,12 @@
             pointer-events: none;
         }
         
-        .separator-chip .triangle-up {
-            width: 0;
-            height: 0;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-bottom: 8px solid var(--text-color);
+        .separator-chip .ellipsis-text {
+            color: var(--text-color);
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1;
+            text-align: center;
         }
         
         .separator-line.active .separator-chip {
@@ -796,7 +799,7 @@
             <!-- Separator line that glows when a conversation is in progress -->
             <div class="separator-line" id="separatorLine">
                 <div class="separator-chip">
-                    <div class="triangle-up"></div>
+                    <div class="ellipsis-text">...</div>
                 </div>
             </div>
             
@@ -867,11 +870,6 @@
                 controlsContainer.style.display = 'none';
             }
             
-            // Enable/disable send button based on input
-            messageInput.addEventListener('input', function() {
-                sendBtn.disabled = messageInput.value.trim() === '';
-            });
-            
             // Handle Enter key to send message (improved version)
             messageInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -902,9 +900,6 @@
                     }
                 }
             });
-            
-            // Send button click handler
-            sendBtn.addEventListener('click', sendMessage);
             
             // Get logo and theme toggle buttons
             const logoToggleBtn = document.getElementById('logoToggleBtn');
