@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Model switch button -->
+  <circle cx="15" cy="15" r="13" fill="var(--primary-color, #4299e1)" stroke="var(--primary-dark, #2b6cb0)" stroke-width="1.5"/>
+  
+  <!-- Two circular arrows indicating switching/changing -->
+  <path d="M10 13C10 10.2386 12.2386 8 15 8C17.7614 8 20 10.2386 20 13C20 14.3 19.5 15.4 18.5 16.2" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <path d="M20 17C20 19.7614 17.7614 22 15 22C12.2386 22 10 19.7614 10 17C10 15.7 10.5 14.6 11.5 13.8" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Arrows at the ends -->
+  <path d="M18.5 14L20.5 16.5L22 14.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M11.5 16L9.5 13.5L8 15.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50" height="24" viewBox="0 0 50 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Drawer chip with downward triangle -->
+  <rect x="1" y="1" width="48" height="22" rx="11" fill="var(--bg-light, #f0f4f8)" stroke="var(--border-color, #cbd5e0)" stroke-width="1"/>
+  <path d="M25 17L20 11L30 11L25 17Z" fill="var(--text-color, #4a5568)"/>
+</svg>
