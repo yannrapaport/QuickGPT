@@ -1240,7 +1240,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const messageInput = document.getElementById('messageInput');
             const chatMessages = document.getElementById('chatMessages');
-            const quickAnswers = document.getElementById('quickAnswers');
+            // No longer using global quickAnswers element - now dynamically attached to messages
             const continueDrawer = document.getElementById('continueDrawer');
             const separatorLine = document.getElementById('separatorLine');
             const promptPreview = document.getElementById('promptPreview');
@@ -1670,7 +1670,7 @@
                         
                         const quickAnswersDiv = document.createElement('div');
                         quickAnswersDiv.className = 'quick-answers';
-                        quickAnswersDiv.id = 'quickAnswers';
+                        // Don't use ID to avoid conflicts with multiple quick answer sections
                         
                         quickAnswersContainer.appendChild(quickAnswersDiv);
                         
@@ -2005,8 +2005,10 @@
                 // Hide regular input container
                 controlsContainer.style.display = 'none';
                 
-                // Hide quick answers and deactivate separator line
-                quickAnswers.style.display = 'none';
+                // Hide any quick answers by targeting elements with the quick-answers class
+                document.querySelectorAll('.quick-answers').forEach(qa => {
+                    qa.style.display = 'none';
+                });
                 toggleSeparatorLine(false);
                 
                 // Hide drawers
@@ -2135,8 +2137,8 @@
                 chatMessages.appendChild(messageElement);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
                 
-                // Show quick answers and activate the separator line
-                quickAnswers.style.display = 'flex';
+                // Only activate the separator line
+                // We no longer need to show quick answers here - they're now attached to messages
                 toggleSeparatorLine(true);
                 
                 // Hide continue drawer by default until separator is clicked
