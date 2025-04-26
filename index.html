@@ -819,17 +819,9 @@
                 <textarea 
                     class="message-input" 
                     id="messageInput" 
-                    placeholder="What would you like to ask today?"
+                    placeholder="Type your message here..."
                     rows="1"></textarea>
-                <!-- Send button is only shown in chat mode, not on welcome screen -->
-                <div class="button-container" id="sendButtonContainer">
-                    <button class="send-btn" id="sendBtn" disabled>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="22" y1="2" x2="11" y2="13"></line>
-                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                        </svg>
-                    </button>
-                </div>
+                <!-- Send button removed as requested -->
             </div>
         </div>
     </div>
@@ -1359,6 +1351,9 @@
                     
                     // Make sure the controls container is visible
                     controlsContainer.style.display = 'flex';
+                    
+                    // Change placeholder text for conversation mode
+                    messageInput.placeholder = "Type your message here...";
                 }
                 
                 const messageElement = document.createElement('div');
