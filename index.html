@@ -387,9 +387,19 @@
         
         .welcome-text {
             margin-bottom: 1.5rem;
-            font-size: 1.2rem;
             line-height: 1.8;
             text-align: center;
+        }
+        
+        .welcome-text .title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .welcome-text .subtitle {
+            font-size: 1.2rem;
         }
         
         .welcome-input-container {
@@ -774,13 +784,14 @@
             <!-- Welcome message with the new format -->
             <div class="welcome-message">
                 <div class="welcome-text">
-                    Welcome to QuickGPT
-                    <br>
-                    Quick conversations
-                    <br>
-                    Instant answers
-                    <br>
-                    Nothing saved
+                    <span class="title">Welcome to QuickGPT</span>
+                    <span class="subtitle">
+                        Quick conversations
+                        <br>
+                        Instant answers
+                        <br>
+                        Nothing saved
+                    </span>
                 </div>
                 <div class="welcome-input-container">
                     <input type="text" class="welcome-input" placeholder="What would you like to ask today?" id="welcomeInput">
@@ -912,19 +923,19 @@
             const longPressDelay = 500; // milliseconds for long press
             
             // Load SVG logos asynchronously
-            const singleBoltLogoPromise = fetch('quickgpt-logo-single.svg')
+            const rocketLogoPromise = fetch('quickgpt-logo-rocket.svg')
                 .then(response => response.text());
                 
-            const doubleBoltLogoPromise = fetch('quickgpt-logo-double.svg')
+            const jetLogoPromise = fetch('quickgpt-logo-jet.svg')
                 .then(response => response.text());
                 
             // Wait for both logos to load
-            Promise.all([singleBoltLogoPromise, doubleBoltLogoPromise])
-                .then(([singleBoltSvg, doubleBoltSvg]) => {
+            Promise.all([rocketLogoPromise, jetLogoPromise])
+                .then(([rocketSvg, jetSvg]) => {
                     // Store logos in memory for quick switching
                     window.logoSvgs = {
-                        single: singleBoltSvg,
-                        double: doubleBoltSvg
+                        rocket: rocketSvg,
+                        jet: jetSvg
                     };
                     
                     // Update logo based on current model
@@ -1058,8 +1069,8 @@
                 
                 // Select the appropriate SVG based on the current model
                 const svgContent = currentModel === 'gpt-4o-mini' 
-                    ? window.logoSvgs.double 
-                    : window.logoSvgs.single;
+                    ? window.logoSvgs.jet   // Very quick = jet
+                    : window.logoSvgs.rocket;  // Quick = rocket
                 
                 // Set the SVG content
                 logoContainer.innerHTML = svgContent;
@@ -1275,13 +1286,14 @@
                 chatMessages.innerHTML = `
                     <div class="welcome-message">
                         <div class="welcome-text">
-                            Welcome to QuickGPT
-                            <br>
-                            Quick conversations
-                            <br>
-                            Instant answers
-                            <br>
-                            Nothing saved
+                            <span class="title">Welcome to QuickGPT</span>
+                            <span class="subtitle">
+                                Quick conversations
+                                <br>
+                                Instant answers
+                                <br>
+                                Nothing saved
+                            </span>
                         </div>
                         <div class="welcome-input-container">
                             <input type="text" class="welcome-input" placeholder="What would you like to ask today?" id="welcomeInput">
