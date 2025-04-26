@@ -234,14 +234,14 @@
         /* Header line styles - glows and is clickable - matching the separator line */
         .header-line {
             position: relative;
-            height: 3px; /* Increased from 2px to 3px for better visibility */
+            height: 3px; /* Consistent 3px height for all glowing lines */
             background-color: var(--primary-color);
             width: 100%;
             cursor: pointer;
             transition: all 0.3s ease;
             z-index: 999;
-            opacity: 0.8; /* Increased from 0.7 to 0.8 for better visibility */
-            box-shadow: 0 0 12px var(--primary-color); /* Increased blur radius from 8px to 12px */
+            opacity: 0.8;
+            box-shadow: 0 0 12px var(--primary-color); /* Consistent glow effect */
         }
         
         .header-line:hover {
@@ -2430,13 +2430,14 @@
                 
                 try {
                     // Call our server API to generate the summary using OpenAI
-                    const response = await fetch('/api/generate-summary', {
+                    const response = await fetch('/generate-summary', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            messages: conversationHistory
+                            messages: conversationHistory,
+                            model: [currentModel]
                         })
                     });
                     
@@ -2472,12 +2473,14 @@
                         prompt += `---\n\nPlease continue this conversation where we left off, keeping in mind the context and topic we were discussing. You should respond as if you are the assistant in this conversation.\n\nWhen you respond, please take into account the entire conversation history above. Your next response should be a direct continuation of this conversation, as if we never stopped talking. You don't need to remind me of what we were discussing, just continue the natural flow of our conversation.`;
                         
                         promptPreview.value = prompt;
+                        promptPreview.classList.remove('generating');
                     }
                 } catch (error) {
                     console.error('Error generating summary:', error);
                     
-                    // Show error and fallback
+                    // Show error and fallback, remove generating class
                     promptPreview.value = "Error generating summary. Please try again.";
+                    promptPreview.classList.remove('generating');
                 }
             }
         });
