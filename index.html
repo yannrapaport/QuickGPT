@@ -250,6 +250,61 @@
             left: -9999px;
         }
         
+        .drawer-chip-container {
+            background-color: var(--separator-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2px 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .drawer-chip-container:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .info-panel {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 300px;
+            background-color: var(--chat-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 16px;
+            z-index: 1000;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .info-panel.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .info-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .info-value {
+            color: var(--text-color);
+            font-weight: 600;
+        }
+        
         .model-dropdown, .theme-dropdown {
             font-size: 12px;
             background-color: transparent;
@@ -751,6 +806,21 @@
                         <div class="triangle-down"></div>
                     </div>
                 </div>
+                <!-- Info panel that shows when drawer chip is clicked -->
+                <div class="info-panel" id="infoPanel">
+                    <div class="info-item">
+                        <span class="info-label">Model:</span>
+                        <span class="info-value" id="infoModel">Quick</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Theme:</span>
+                        <span class="info-value" id="infoTheme">Light</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">API Status:</span>
+                        <span class="info-value" id="infoApiStatus">Connected</span>
+                    </div>
+                </div>
             </div>
             
             <div class="header-controls">
@@ -886,6 +956,13 @@
             const controlsContainer = document.querySelector('.controls-container');
             const modelSwitchBtn = document.getElementById('modelSwitchBtn');
             
+            // Info panel elements
+            const infoDrawerChip = document.getElementById('infoDrawerChip');
+            const infoPanel = document.getElementById('infoPanel');
+            const infoModel = document.getElementById('infoModel');
+            const infoTheme = document.getElementById('infoTheme');
+            const infoApiStatus = document.getElementById('infoApiStatus');
+            
             let currentQuestion = '';
             let currentResponse = '';
             let currentModel = 'gpt-4o'; // Default model
@@ -893,6 +970,9 @@
             
             // Initialize theme from saved preference
             initTheme();
+            
+            // Initialize info panel content
+            updateInfoPanel();
             
             // Hide the controls container initially when welcome message is showing
             if (document.querySelector('.welcome-message')) {
@@ -1302,6 +1382,8 @@
             themeSelect.addEventListener('change', function() {
                 const selectedTheme = this.value;
                 applyTheme(selectedTheme);
+                // Update info panel with new theme
+                updateInfoPanel();
                 // No notification message, users can see theme change visually
             });
             
@@ -1314,8 +1396,55 @@
                 // Update the logo to reflect model change
                 updateLogo();
                 
+                // Update the info panel
+                updateInfoPanel();
+                
                 // No notification message, users can see the logo change
             });
+            
+            // Info drawer chip click handler
+            infoDrawerChip.addEventListener('click', function() {
+                toggleInfoPanel();
+            });
+            
+            // Function to toggle info panel visibility
+            function toggleInfoPanel() {
+                // Update the info panel data
+                updateInfoPanel();
+                
+                // Toggle visibility
+                infoPanel.classList.toggle('visible');
+                
+                // Add click outside listener if panel is visible
+                if (infoPanel.classList.contains('visible')) {
+                    setTimeout(() => {
+                        document.addEventListener('click', handleInfoPanelOutsideClick);
+                    }, 10);
+                } else {
+                    document.removeEventListener('click', handleInfoPanelOutsideClick);
+                }
+            }
+            
+            // Handle clicks outside the info panel
+            function handleInfoPanelOutsideClick(event) {
+                if (!infoPanel.contains(event.target) && !infoDrawerChip.contains(event.target)) {
+                    infoPanel.classList.remove('visible');
+                    document.removeEventListener('click', handleInfoPanelOutsideClick);
+                }
+            }
+            
+            // Function to update info panel content
+            function updateInfoPanel() {
+                // Update model info
+                infoModel.textContent = currentModel === 'gpt-4o' ? 'Quick' : 'Very quick';
+                
+                // Update theme info
+                infoTheme.textContent = currentTheme.charAt(0).toUpperCase() + currentTheme.slice(1);
+                
+                // Check API status - simple for now
+                const apiStatus = document.body.hasAttribute('data-api-error') ? 'Disconnected' : 'Connected';
+                infoApiStatus.textContent = apiStatus;
+            }
             
             // Reset chat button
             resetBtn.addEventListener('click', function() {
