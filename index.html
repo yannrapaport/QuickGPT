@@ -606,6 +606,12 @@
             display: flex;
             align-items: flex-start;
         }
+        
+        .system-message-container .message-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
 
         .user-message {
             background-color: var(--system-bubble-bg);
@@ -1666,29 +1672,19 @@
                 
                 // Check if we have valid suggestions and a message to attach them to
                 if (suggestions && Array.isArray(suggestions) && suggestions.length > 0 && lastMessage) {
-                    // Create or get the quick answers container
-                    let quickAnswersContainer = lastMessage.querySelector('.quick-answers-container');
+                    // First, remove any existing quick answers containers for a fresh start
+                    document.querySelectorAll('.quick-answers-container').forEach(container => {
+                        container.remove();
+                    });
                     
-                    // If it doesn't exist, create it
-                    if (!quickAnswersContainer) {
-                        quickAnswersContainer = document.createElement('div');
-                        quickAnswersContainer.className = 'quick-answers-container';
-                        
-                        const quickAnswersDiv = document.createElement('div');
-                        quickAnswersDiv.className = 'quick-answers';
-                        // Don't use ID to avoid conflicts with multiple quick answer sections
-                        
-                        quickAnswersContainer.appendChild(quickAnswersDiv);
-                        
-                        // Append after the last message
-                        lastMessage.appendChild(quickAnswersContainer);
-                    }
+                    // Create fresh quick answers container
+                    const quickAnswersContainer = document.createElement('div');
+                    quickAnswersContainer.className = 'quick-answers-container';
                     
-                    // Find the quick answers div
-                    const quickAnswersDiv = quickAnswersContainer.querySelector('.quick-answers');
+                    const quickAnswersDiv = document.createElement('div');
+                    quickAnswersDiv.className = 'quick-answers';
                     
-                    // Clear existing buttons
-                    quickAnswersDiv.innerHTML = '';
+                    quickAnswersContainer.appendChild(quickAnswersDiv);
                     
                     // Create new buttons based on suggestions
                     suggestions.forEach(suggestion => {
@@ -1699,11 +1695,23 @@
                         quickAnswersDiv.appendChild(button);
                     });
                     
+                    // Important: For system messages, place suggestions within message content for proper flow
+                    if (lastMessage.classList.contains('system-message-container')) {
+                        const messageContent = lastMessage.querySelector('.message-content');
+                        if (messageContent) {
+                            // Insert the suggestions directly into the message content after the message body
+                            messageContent.appendChild(quickAnswersContainer);
+                        } else {
+                            // Fallback if message content not found (shouldn't happen)
+                            lastMessage.appendChild(quickAnswersContainer);
+                        }
+                    } else {
+                        // For non-system messages (unlikely case), append to the message
+                        lastMessage.appendChild(quickAnswersContainer);
+                    }
+                    
                     // Add event listeners to new buttons
                     setupQuickAnswerButtons();
-                    
-                    // Show quick answers section
-                    quickAnswersDiv.style.display = 'flex';
                 }
             }
             
