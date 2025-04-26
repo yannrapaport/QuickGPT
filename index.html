@@ -412,6 +412,142 @@
             z-index: 10;
             width: 150px;
         }
+        
+        /* New Model Switch Dropdown */
+        .model-switcher {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .model-switcher-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-light);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 6px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            gap: 5px;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+        
+        .model-switcher-button:hover {
+            background-color: var(--primary-color);
+            color: var(--primary-text);
+        }
+        
+        .model-switcher-button svg {
+            width: 14px;
+            height: 14px;
+        }
+        
+        .model-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 6px;
+            background-color: var(--chat-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            min-width: 220px;
+            display: none;
+            flex-direction: column;
+            padding: 8px 0;
+            max-height: 80vh;
+            overflow-y: auto;
+            opacity: 0;
+            transform: translateX(-50%) translateY(-10px);
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        
+        .model-dropdown-menu.visible {
+            display: flex;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .model-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            color: var(--text-color);
+            border-left: 3px solid transparent;
+        }
+        
+        .model-option:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .model-option.active {
+            background-color: var(--primary-light);
+            border-left-color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .model-name {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .model-title {
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .model-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        
+        .model-badge {
+            font-size: 10px;
+            background-color: var(--primary-color);
+            color: var(--primary-text);
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+        
+        .model-badge-default {
+            background-color: var(--primary-color);
+        }
+        
+        .model-badge-faster {
+            background-color: #10a37f;
+        }
+        
+        .model-badge-new {
+            background-color: #ff5a00;
+        }
+        
+        .model-unavailable {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .model-group-header {
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--separator-color);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
 
         .chat-messages {
             padding: 24px;
@@ -917,14 +1053,31 @@
                     </svg>
                 </button>
                 
-                <button id="modelSwitchBtn" class="control-btn model-btn" title="Switch model">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 2v6h-6"></path>
-                        <path d="M3 12a9 9 0 0 1 15-6.7l3-3.3"></path>
-                        <path d="M3 22v-6h6"></path>
-                        <path d="M21 12a9 9 0 0 1-15 6.7l-3 3.3"></path>
-                    </svg>
-                </button>
+                <div class="model-switcher">
+                    <button id="modelSwitchBtn" class="model-switcher-button" title="Switch model">
+                        <span id="currentModelName">Quick</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    
+                    <div id="modelDropdownMenu" class="model-dropdown-menu">
+                        <div class="model-option" data-model="gpt-4o">
+                            <div class="model-name">
+                                <span class="model-title">Quick</span>
+                                <span class="model-description">GPT-4o - Smart and balanced</span>
+                            </div>
+                            <span class="model-badge model-badge-default">Default</span>
+                        </div>
+                        <div class="model-option" data-model="gpt-4o-mini">
+                            <div class="model-name">
+                                <span class="model-title">Very quick</span>
+                                <span class="model-description">GPT-4o-mini - Faster responses</span>
+                            </div>
+                            <span class="model-badge model-badge-faster">Faster</span>
+                        </div>
+                    </div>
+                </div>
                 
                 <button id="themeToggleBtn" class="control-btn theme-btn" title="Toggle between themes">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
