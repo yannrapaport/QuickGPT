@@ -234,19 +234,19 @@
         /* Header line styles - glows and is clickable - matching the separator line */
         .header-line {
             position: relative;
-            height: 2px; /* Start with 2px height */
-            background-color: var(--primary-color); /* Start with primary color */
+            height: 3px; /* Increased from 2px to 3px for better visibility */
+            background-color: var(--primary-color);
             width: 100%;
             cursor: pointer;
             transition: all 0.3s ease;
             z-index: 999;
-            opacity: 0.7; /* Start with glow opacity */
-            box-shadow: 0 0 8px var(--primary-color); /* Start with glow effect */
+            opacity: 0.8; /* Increased from 0.7 to 0.8 for better visibility */
+            box-shadow: 0 0 12px var(--primary-color); /* Increased blur radius from 8px to 12px */
         }
         
         .header-line:hover {
-            opacity: 1; /* Increase glow on hover */
-            box-shadow: 0 0 10px var(--primary-color);
+            opacity: 1; /* Full opacity on hover */
+            box-shadow: 0 0 15px var(--primary-color); /* Increased blur radius on hover */
         }
         
         .header-controls {
@@ -772,20 +772,20 @@
         /* Separator line between chat and controls - glows and is clickable - matching the header line */
         .separator-line {
             position: relative;
-            height: 2px; /* Start with 2px height */
+            height: 3px; /* Increased from 2px to 3px for better visibility */
             width: 100%;
-            background-color: var(--primary-color); /* Start with primary color */
+            background-color: var(--primary-color);
             margin: 0;
             transition: all 0.3s ease;
             z-index: 999;
             cursor: pointer;
-            opacity: 0.7; /* Start with glow opacity */
-            box-shadow: 0 0 8px var(--primary-color); /* Start with glow effect */
+            opacity: 0.8; /* Increased from 0.7 to 0.8 for better visibility */
+            box-shadow: 0 0 12px var(--primary-color); /* Increased blur radius from 8px to 12px */
         }
         
         .separator-line:hover {
-            opacity: 1; /* Increase glow on hover */
-            box-shadow: 0 0 10px var(--primary-color);
+            opacity: 1; /* Full opacity on hover */
+            box-shadow: 0 0 15px var(--primary-color); /* Increased blur radius on hover */
         }
 
         /* Unified Drawer Component */
