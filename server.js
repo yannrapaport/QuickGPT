@@ -408,6 +408,105 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
+// API endpoint for generating conversation summaries
+app.post('/api/generate-summary', async (req, res) => {
+  try {
+    console.log('Summary generation request received');
+    const { messages } = req.body;
+    
+    // Validate request
+    if (!messages || !Array.isArray(messages)) {
+      console.error('Invalid messages format for summary generation:', messages);
+      return res.status(400).json({ 
+        error: 'Invalid request format. Messages array is required.' 
+      });
+    }
+    
+    // Get API key and check availability
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey || !apiKey.startsWith('sk-')) {
+      console.log('No valid API key for summary generation');
+      return res.status(400).json({ 
+        error: 'Valid API key required for summary generation' 
+      });
+    }
+    
+    // Initialize the OpenAI client
+    const openai = new OpenAI({
+      apiKey: apiKey,
+      timeout: 60000,
+      maxRetries: 2
+    });
+    
+    // Get available models for fallback
+    let availableModels = [];
+    try {
+      const modelResponse = await openai.models.list();
+      availableModels = modelResponse.data
+        .filter(m => m.id.includes('gpt-'))
+        .map(m => m.id);
+      console.log('Available models for summary generation:', availableModels);
+    } catch (modelError) {
+      console.error('Error fetching models, using defaults:', modelError.message);
+      // Default fallback order
+      availableModels = ['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo'];
+    }
+    
+    // Model preference order for summary generation
+    const modelPreference = ['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo'];
+    
+    // Select best available model using our helper function
+    const selectedModel = selectBestAvailableModel(modelPreference[0], availableModels);
+    console.log(`Using model for summary generation: ${selectedModel}`);
+    
+    // Craft the message for the summary generation prompt
+    const systemPrompt = `
+You are tasked with creating a brief, concise summary of a conversation. 
+The summary should capture the essential points discussed, without unnecessary details.
+Focus on the main topics and the most recent exchange.
+The output should be in a simple format with:
+1. A short overview of main topics (1-2 sentences max)
+2. The most recent exchange (last question and answer)
+
+Keep your summary very concise - it should fit comfortably in a small text area.
+Do not include any explanations or meta-commentary about the summary itself.
+`;
+
+    // Make the API call for summary generation
+    const response = await openai.chat.completions.create({
+      model: selectedModel,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        ...messages // Pass the conversation history
+      ],
+      max_tokens: 250,
+      temperature: 0.7
+    });
+    
+    if (response.choices && response.choices.length > 0) {
+      const summary = response.choices[0].message.content.trim();
+      
+      // Format the continuation prompt
+      const continuationPrompt = `Please continue this conversation where we left off, keeping in mind the context and the topic we discussed. You are the assistant in this conversation and should respond naturally, as if we never stopped talking. No need to summarize what was discussed; just continue directly based on the previous exchange.`;
+      
+      return res.json({ 
+        summary: summary,
+        continuationPrompt: continuationPrompt
+      });
+    } else {
+      return res.status(500).json({ 
+        error: 'Failed to generate summary' 
+      });
+    }
+  } catch (error) {
+    console.error('Error generating summary:', error);
+    return res.status(500).json({ 
+      error: 'Error generating summary', 
+      details: error.message 
+    });
+  }
+});
+
 // Start the server
 app.listen(port, '0.0.0.0', () => {
   console.log(`Server running at http://0.0.0.0:${port}`);

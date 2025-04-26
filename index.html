@@ -1725,18 +1725,15 @@
             // Toggle the visibility of the separator line when conversation starts
             function toggleSeparatorLine(show) {
                 if (show) {
-                    // Set conversation started flag to true once we've shown the separator
-                    // and don't show it again until the conversation has properly started
+                    // The separator should appear as soon as the message input section is visible
+                    separatorLine.classList.add('active');
+                    
+                    // Set conversation started flag if not already set
                     if (!conversationStarted) {
                         conversationStarted = true;
                     }
-                    
-                    // Only add the active class if conversation has started
-                    if (conversationStarted) {
-                        separatorLine.classList.add('active');
-                    }
                 } else {
-                    // If resetting the app, also hide the line
+                    // If resetting the app, hide the line
                     separatorLine.classList.remove('active');
                 }
             }
@@ -2394,7 +2391,10 @@
                 return temp.textContent || temp.innerText || '';
             }
             
-            function generateChatGPTPrompt() {
+            async function generateChatGPTPrompt() {
+                // First, show a loading message in the prompt preview
+                promptPreview.value = "Generating summary...";
+                
                 // Get all conversation messages
                 const messages = document.querySelectorAll('.message');
                 let conversationHistory = [];
@@ -2413,60 +2413,62 @@
                     }
                 });
                 
-                // Create a concise summary prompt for ChatGPT
-                let prompt = `Brief summary of our conversation in QuickGPT:\n\n`;
-                
-                // We'll include the full content of the last exchange (most recent user question and AI response)
-                // but summarize earlier exchanges to keep it concise
-                if (conversationHistory.length >= 2) {
-                    // Handle prior conversation history with a brief summary
-                    if (conversationHistory.length > 2) {
-                        // Get the main topics from prior exchanges
-                        const priorExchanges = conversationHistory.slice(0, -2);
-                        
-                        // Extract topics from our conversation (just take first 1-2 sentences of each message)
-                        const topicSummary = priorExchanges.map(msg => {
-                            const content = msg.content || '';
-                            // Take first sentence or two of each message (up to ~70 chars)
-                            const sentences = content.split(/[.!?]+/);
-                            if (sentences.length > 0) {
-                                const firstSentence = sentences[0].trim();
-                                if (firstSentence.length < 70 && sentences.length > 1) {
-                                    return firstSentence + '.';
-                                } else {
-                                    return firstSentence.substring(0, 70) + '...';
-                                }
-                            }
-                            return '';
-                        }).filter(s => s.length > 0);
-                        
-                        if (topicSummary.length > 0) {
-                            prompt += `We discussed: ${topicSummary.join(' ')}\n\n`;
-                        }
-                    }
-                    
-                    // Always include the most recent exchange in full
-                    const lastUserMsg = conversationHistory.filter(msg => msg.role === 'user').pop();
-                    const lastAssistantMsg = conversationHistory.filter(msg => msg.role === 'assistant').pop();
-                    
-                    if (lastUserMsg) {
-                        prompt += `Most recent question: "${lastUserMsg.content}"\n\n`;
-                    }
-                    
-                    if (lastAssistantMsg) {
-                        prompt += `Your last response: "${lastAssistantMsg.content}"\n\n`;
-                    }
-                } else {
-                    // If there's only one exchange or less, just include it all
-                    conversationHistory.forEach(msg => {
-                        prompt += `${msg.role === 'user' ? 'Question' : 'Response'}: "${msg.content}"\n\n`;
-                    });
+                // No conversation to summarize
+                if (conversationHistory.length === 0) {
+                    promptPreview.value = "Start a conversation first to generate a summary.";
+                    return;
                 }
                 
-                // Add the standardized continuation prompt
-                prompt += `---\nPlease continue this conversation where we left off, keeping in mind the context and topic we were discussing. You should respond as if you are the assistant in this conversation.\n\nWhen you respond, please take into account the entire conversation history above. Your next response should be a direct continuation of this conversation, as if we never stopped talking. You don't need to remind me of what we were discussing, just continue the natural flow of our conversation.`;
-                
-                promptPreview.value = prompt;
+                try {
+                    // Call our server API to generate the summary using OpenAI
+                    const response = await fetch('/api/generate-summary', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            messages: conversationHistory
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        // Format the complete prompt with summary and continuation instructions
+                        let prompt = `Summary of our conversation:\n\n${data.summary}\n\n---\n\n${data.continuationPrompt}`;
+                        
+                        // Update the prompt preview
+                        promptPreview.value = prompt;
+                    } else {
+                        // If API call fails, show error and fall back to local summary generation
+                        console.error('Failed to generate summary via API:', await response.text());
+                        
+                        // Fallback to local summary method
+                        let prompt = `Brief summary of our conversation in QuickGPT:\n\n`;
+                        
+                        // Just take the most recent exchange for simplicity in the fallback
+                        const lastUserMsg = conversationHistory.filter(msg => msg.role === 'user').pop();
+                        const lastAssistantMsg = conversationHistory.filter(msg => msg.role === 'assistant').pop();
+                        
+                        if (lastUserMsg) {
+                            prompt += `Last question: "${lastUserMsg.content}"\n\n`;
+                        }
+                        
+                        if (lastAssistantMsg) {
+                            prompt += `Last response: "${lastAssistantMsg.content}"\n\n`;
+                        }
+                        
+                        // Add the standardized continuation prompt
+                        prompt += `---\n\nPlease continue this conversation where we left off, keeping in mind the context and topic we were discussing. You should respond as if you are the assistant in this conversation.\n\nWhen you respond, please take into account the entire conversation history above. Your next response should be a direct continuation of this conversation, as if we never stopped talking. You don't need to remind me of what we were discussing, just continue the natural flow of our conversation.`;
+                        
+                        promptPreview.value = prompt;
+                    }
+                } catch (error) {
+                    console.error('Error generating summary:', error);
+                    
+                    // Show error and fallback
+                    promptPreview.value = "Error generating summary. Please try again.";
+                }
             }
         });
     </script>
