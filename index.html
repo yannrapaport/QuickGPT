@@ -819,9 +819,10 @@
                 <textarea 
                     class="message-input" 
                     id="messageInput" 
-                    placeholder="Type your message here..."
+                    placeholder="What would you like to ask today?"
                     rows="1"></textarea>
-                <div class="button-container">
+                <!-- Send button is only shown in chat mode, not on welcome screen -->
+                <div class="button-container" id="sendButtonContainer">
                     <button class="send-btn" id="sendBtn" disabled>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -859,6 +860,11 @@
             // Initialize theme from saved preference
             initTheme();
             
+            // Hide the controls container initially when welcome message is showing
+            if (document.querySelector('.welcome-message')) {
+                controlsContainer.style.display = 'none';
+            }
+            
             // Enable/disable send button based on input
             messageInput.addEventListener('input', function() {
                 sendBtn.disabled = messageInput.value.trim() === '';
@@ -870,6 +876,27 @@
                     e.preventDefault(); // Prevent default new line
                     if (messageInput.value.trim() !== '') {
                         sendMessage();
+                    }
+                }
+            });
+            
+            // Welcome input handler for Enter key
+            welcomeInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevent form submission
+                    const message = welcomeInput.value.trim();
+                    if (message !== '') {
+                        // Transfer the message to regular input
+                        messageInput.value = message;
+                        
+                        // Show regular input container
+                        controlsContainer.style.display = 'flex';
+                        
+                        // Send the message
+                        sendMessage();
+                        
+                        // Clear welcome input
+                        welcomeInput.value = '';
                     }
                 }
             });
@@ -1254,8 +1281,32 @@
                         <p>Quick conversations.</p>
                         <p>Instant answers.</p>
                         <p>Nothing saved.</p>
+                        <input type="text" class="welcome-input" placeholder="What would you like to ask today?" id="welcomeInput">
                     </div>
                 `;
+                
+                // Get the new welcome input element and add event listener
+                const newWelcomeInput = document.getElementById('welcomeInput');
+                if (newWelcomeInput) {
+                    newWelcomeInput.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const message = newWelcomeInput.value.trim();
+                            if (message !== '') {
+                                messageInput.value = message;
+                                controlsContainer.style.display = 'flex';
+                                sendMessage();
+                                newWelcomeInput.value = '';
+                            }
+                        }
+                    });
+                    
+                    // Focus on the welcome input
+                    newWelcomeInput.focus();
+                }
+                
+                // Hide regular input container
+                controlsContainer.style.display = 'none';
                 
                 // Hide quick answers and deactivate separator line
                 quickAnswers.style.display = 'none';
@@ -1271,9 +1322,6 @@
                 // Reset copy notification
                 copyNotification.style.display = 'none';
                 copyNotification.style.opacity = '0';
-                
-                // Focus on message input
-                messageInput.focus();
             });
             
             // Send message function
@@ -1304,10 +1352,13 @@
             function addUserMessage(message) {
                 currentQuestion = message;
                 
-                // If this is the first message, clear the welcome message
+                // If this is the first message, clear the welcome message and show controls
                 const welcomeMessage = document.querySelector('.welcome-message');
                 if (welcomeMessage) {
                     chatMessages.innerHTML = '';
+                    
+                    // Make sure the controls container is visible
+                    controlsContainer.style.display = 'flex';
                 }
                 
                 const messageElement = document.createElement('div');
