@@ -1027,7 +1027,7 @@
             const sendBtn = document.getElementById('sendBtn');
             const chatMessages = document.getElementById('chatMessages');
             const quickAnswers = document.getElementById('quickAnswers');
-            const continueSection = document.getElementById('continueSection');
+            const continueDrawer = document.getElementById('continueDrawer');
             const separatorLine = document.getElementById('separatorLine');
             const promptPreview = document.getElementById('promptPreview');
             const copyNotification = document.getElementById('copyNotification');
@@ -1044,7 +1044,6 @@
             const headerLine = document.getElementById('headerLine');
             const infoDrawer = document.getElementById('infoDrawer');
             const infoTextbox = document.getElementById('infoTextbox');
-            const continueDrawer = document.getElementById('continueDrawer');
             const infoCopyNotification = document.getElementById('infoCopyNotification');
             
             let currentQuestion = '';
@@ -1327,15 +1326,15 @@
                 
                 // Debug check if elements exist
                 console.log('Separator exists:', !!separatorLine);
-                console.log('Drawer exists:', !!continueSection);
+                console.log('Drawer exists:', !!continueDrawer);
                 
                 if (separatorLine.classList.contains('active')) {
                     console.log('Attempting to show drawer');
-                    // Make sure continueSection is properly initialized
-                    if (continueSection) {
+                    // Make sure continueDrawer is properly initialized
+                    if (continueDrawer) {
                         toggleContinueDrawer(true);
                     } else {
-                        console.error('continueSection element not found');
+                        console.error('continueDrawer element not found');
                     }
                 }
             });
