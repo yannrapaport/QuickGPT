@@ -499,12 +499,20 @@
             pointer-events: none;
         }
         
-        .separator-chip .ellipsis-text {
-            color: var(--text-color);
-            font-size: 14px;
-            font-weight: bold;
-            line-height: 1;
-            text-align: center;
+        .triangle-up {
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 10px solid var(--text-color);
+        }
+        
+        .triangle-down {
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 10px solid var(--text-color);
         }
         
         .separator-line.active .separator-chip {
@@ -810,7 +818,7 @@
             <!-- Separator line that glows when a conversation is in progress -->
             <div class="separator-line" id="separatorLine">
                 <div class="separator-chip">
-                    <div class="ellipsis-text">...</div>
+                    <div class="triangle-up"></div>
                 </div>
             </div>
             
@@ -1397,10 +1405,10 @@
                 messageBody.className = 'message-body user-message';
                 messageBody.textContent = message;
                 
-                // Assemble the message with time on the left (WhatsApp style)
+                // Assemble the message with time first, then bubble
+                messageElement.appendChild(messageTime);
                 messageContent.appendChild(messageBody);
                 messageElement.appendChild(messageContent);
-                messageElement.appendChild(messageTime);
                 
                 chatMessages.appendChild(messageElement);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -1447,10 +1455,10 @@
                 // Use innerHTML to allow for formatted content
                 messageBody.innerHTML = formatMessageText(message);
                 
-                // Assemble the message with time on the right
+                // Assemble the message with time first, then bubble
+                messageElement.appendChild(messageTime);
                 messageContent.appendChild(messageBody);
                 messageElement.appendChild(messageContent);
-                messageElement.appendChild(messageTime);
                 
                 chatMessages.appendChild(messageElement);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -1486,10 +1494,10 @@
                     loadingMessageElement.textContent = loadingMessage;
                     loadingMessageElement.id = 'loading-message';
                     
-                    // Assemble the message with time on the right
+                    // Assemble the message with time first, then bubble
+                    loadingElement.appendChild(messageTime);
                     messageContent.appendChild(loadingMessageElement);
                     loadingElement.appendChild(messageContent);
-                    loadingElement.appendChild(messageTime);
                     
                     chatMessages.appendChild(loadingElement);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
