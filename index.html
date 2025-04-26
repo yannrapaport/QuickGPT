@@ -1149,8 +1149,8 @@
                 })
                 .catch(error => {
                     console.error('Error loading SVG logos:', error);
-                    // Fallback in case SVG loading fails
-                    logoContainer.innerHTML = `<div style="width:30px;height:30px;background:var(--primary-color);border-radius:50%;"></div>`;
+                    // Fallback - keep logo container empty as requested
+                    logoContainer.innerHTML = '';
                 });
             
             // Logo/model toggle button click (cycle through options)
@@ -1287,18 +1287,10 @@
                 });
             }
             
-            // Function to update logo based on model
+            // Function to update logo based on model - currently disabled as logos have been removed
             function updateLogo() {
-                // Check if SVGs are loaded
-                if (!window.logoSvgs) return;
-                
-                // Select the appropriate SVG based on the current model
-                const svgContent = currentModel === 'gpt-4o-mini' 
-                    ? window.logoSvgs.jet   // Very quick = jet
-                    : window.logoSvgs.rocket;  // Quick = rocket
-                
-                // Set the SVG content
-                logoContainer.innerHTML = svgContent;
+                // Logo functionality removed as requested
+                logoContainer.innerHTML = '';
             }
             
             // Function to set up quick answer buttons 
