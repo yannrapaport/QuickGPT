@@ -2413,19 +2413,58 @@
                     }
                 });
                 
-                // Create a comprehensive prompt for ChatGPT
-                let prompt = `I want to continue this conversation that was started with QuickGPT (powered by GPT-4o). Here's the conversation so far:\n\n`;
+                // Create a concise summary prompt for ChatGPT
+                let prompt = `Brief summary of our conversation in QuickGPT:\n\n`;
                 
-                // Format conversation history
-                conversationHistory.forEach(msg => {
-                    prompt += `${msg.role === 'user' ? 'Me' : 'Assistant'}: ${msg.content}\n\n`;
-                });
+                // We'll include the full content of the last exchange (most recent user question and AI response)
+                // but summarize earlier exchanges to keep it concise
+                if (conversationHistory.length >= 2) {
+                    // Handle prior conversation history with a brief summary
+                    if (conversationHistory.length > 2) {
+                        // Get the main topics from prior exchanges
+                        const priorExchanges = conversationHistory.slice(0, -2);
+                        
+                        // Extract topics from our conversation (just take first 1-2 sentences of each message)
+                        const topicSummary = priorExchanges.map(msg => {
+                            const content = msg.content || '';
+                            // Take first sentence or two of each message (up to ~70 chars)
+                            const sentences = content.split(/[.!?]+/);
+                            if (sentences.length > 0) {
+                                const firstSentence = sentences[0].trim();
+                                if (firstSentence.length < 70 && sentences.length > 1) {
+                                    return firstSentence + '.';
+                                } else {
+                                    return firstSentence.substring(0, 70) + '...';
+                                }
+                            }
+                            return '';
+                        }).filter(s => s.length > 0);
+                        
+                        if (topicSummary.length > 0) {
+                            prompt += `We discussed: ${topicSummary.join(' ')}\n\n`;
+                        }
+                    }
+                    
+                    // Always include the most recent exchange in full
+                    const lastUserMsg = conversationHistory.filter(msg => msg.role === 'user').pop();
+                    const lastAssistantMsg = conversationHistory.filter(msg => msg.role === 'assistant').pop();
+                    
+                    if (lastUserMsg) {
+                        prompt += `Most recent question: "${lastUserMsg.content}"\n\n`;
+                    }
+                    
+                    if (lastAssistantMsg) {
+                        prompt += `Your last response: "${lastAssistantMsg.content}"\n\n`;
+                    }
+                } else {
+                    // If there's only one exchange or less, just include it all
+                    conversationHistory.forEach(msg => {
+                        prompt += `${msg.role === 'user' ? 'Question' : 'Response'}: "${msg.content}"\n\n`;
+                    });
+                }
                 
-                // Add instructions for continuation
-                prompt += `Please continue this conversation where we left off, keeping in mind the context and topic we were discussing. You should respond as if you are the assistant in this conversation.\n\n`;
-                
-                // Add next steps instructions
-                prompt += `When you respond, please take into account the entire conversation history above. Your next response should be a direct continuation of this conversation, as if we never stopped talking. You don't need to remind me of what we were discussing, just continue the natural flow of our conversation.`;
+                // Add the standardized continuation prompt
+                prompt += `---\nPlease continue this conversation where we left off, keeping in mind the context and topic we were discussing. You should respond as if you are the assistant in this conversation.\n\nWhen you respond, please take into account the entire conversation history above. Your next response should be a direct continuation of this conversation, as if we never stopped talking. You don't need to remind me of what we were discussing, just continue the natural flow of our conversation.`;
                 
                 promptPreview.value = prompt;
             }
