@@ -1,16 +1,15 @@
-# .replit
-modules = ["nodejs-20"]         # installe Node 20 + npm
-language = "nodejs"             # précision de l'environnement
-run = "npm install && node server.js"
+modules = ["nodejs-20"]
+language = "nodejs"
+run = "npm install && npm start"
 
 [nix]
 channel = "stable-24_05"
-packages = ["vim-full", "nano", "gnupatch"]
+packages = ["vim-full", "nano"]
 
 [[ports]]
 localPort = 5000
 externalPort = 80
 
 [deployment]
-run = "npm install && node server.js"
+run = "npm install && npm start"
 deploymentTarget = "cloudrun"
