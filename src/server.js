@@ -11,7 +11,7 @@ const port = 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, './')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve the index.html file
 app.get('/', (req, res) => {
