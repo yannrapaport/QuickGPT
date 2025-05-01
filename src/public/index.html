@@ -1351,29 +1351,20 @@
             let themeLongPressTimer;
             const longPressDelay = 500; // milliseconds for long press
             
-            // Load SVG logos asynchronously
-            const rocketLogoPromise = fetch('quickgpt-logo-rocket.svg')
-                .then(response => response.text());
-                
-            const jetLogoPromise = fetch('quickgpt-logo-jet.svg')
-                .then(response => response.text());
-                
-            // Wait for both logos to load
-            Promise.all([rocketLogoPromise, jetLogoPromise])
-                .then(([rocketSvg, jetSvg]) => {
-                    // Store logos in memory for quick switching
-                    window.logoSvgs = {
-                        rocket: rocketSvg,
-                        jet: jetSvg
-                    };
-                    
-                    // Update logo based on current model
-                    updateLogo();
-                })
-                .catch(error => {
-                    console.error('Error loading SVG logos:', error);
-                    // No fallback needed as logo container has been removed
-                });
+            // Use the existing PNG logo instead of trying to load SVG files that don't exist
+            // This prevents 404 errors in the console
+            window.logoSvgs = {
+                rocket: null, // Not needed anymore
+                jet: null     // Not needed anymore
+            };
+            
+            // Skip logo loading as we're using the PNG image directly in the HTML
+            // Logo is already displayed via <img src="assets/images/quickgpt-logo-transparent.png">
+            
+            // This function might be called elsewhere, so we'll keep it as a no-op
+            function updateLogo() {
+                // No need to update logos anymore
+            }
             
             // Logo button click event is now handled by the toggleModelDropdown function
             
@@ -1619,21 +1610,21 @@
                 logoLongPressTimer = setTimeout(() => {
                     showDropdown(modelSelect);
                 }, longPressDelay);
-            });
+            }, { passive: true }); // Marquer comme passif pour éviter les avertissements
             
             logoToggleBtn.addEventListener('touchend', function() {
                 clearTimeout(logoLongPressTimer);
-            });
+            }, { passive: true });
             
             themeToggleBtn.addEventListener('touchstart', function(e) {
                 themeLongPressTimer = setTimeout(() => {
                     showDropdown(themeSelect);
                 }, longPressDelay);
-            });
+            }, { passive: true }); // Marquer comme passif pour éviter les avertissements
             
             themeToggleBtn.addEventListener('touchend', function() {
                 clearTimeout(themeLongPressTimer);
-            });
+            }, { passive: true });
             
             // Function to show dropdown
             function showDropdown(selectElement) {
