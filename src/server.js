@@ -207,7 +207,7 @@ app.get('/api/models', async (req, res) => {
     } else {
       // If no API key, return default models
       return res.json({ 
-        models: ['gpt-4o', 'gpt-3.5-turbo'],
+        models: ['gpt-3.5-turbo', 'gpt-4o'],
         simulated: true
       });
     }
@@ -215,7 +215,7 @@ app.get('/api/models', async (req, res) => {
     console.error('Error fetching models:', error);
     // Return a reasonable default in case of error
     return res.json({ 
-      models: ['gpt-4o', 'gpt-3.5-turbo'],
+      models: ['gpt-3.5-turbo', 'gpt-4o'],
       error: error.message 
     });
   }
@@ -236,7 +236,7 @@ function selectBestAvailableModel(requestedModel, availableModels) {
   }
   
   // Define the fallback order
-  const fallbackOrder = ['gpt-4.1', 'gpt-4o', 'gpt-4-turbo', 'gpt-4', 'gpt-3.5-turbo'];
+  const fallbackOrder = ['gpt-3.5-turbo', 'gpt-4.1', 'gpt-4o', 'gpt-4-turbo', 'gpt-4'];
   
   // Find the requested model's position in the fallback order
   const requestedIndex = fallbackOrder.indexOf(requestedModel);
@@ -289,7 +289,7 @@ app.post('/api/chat', async (req, res) => {
     
     // Get API key and available models
     const apiKey = process.env.OPENAI_API_KEY;
-    let availableModels = ['gpt-4o', 'gpt-3.5-turbo']; // Default fallback models
+    let availableModels = ['gpt-3.5-turbo', 'gpt-4o']; // Default fallback models
     
     if (apiKey && apiKey.startsWith('sk-')) {
       try {
@@ -305,7 +305,7 @@ app.post('/api/chat', async (req, res) => {
     }
     
     // Select the best model based on requested model and available models
-    const requestedModel = model || 'gpt-4o';
+    const requestedModel = model || 'gpt-3.5-turbo';
     const selectedModel = selectBestAvailableModel(requestedModel, availableModels);
     console.log(`Requested model: ${requestedModel}, Selected model: ${selectedModel}`);
     
@@ -449,11 +449,11 @@ app.post('/api/generate-summary', async (req, res) => {
     } catch (modelError) {
       console.error('Error fetching models, using defaults:', modelError.message);
       // Default fallback order
-      availableModels = ['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo'];
+      availableModels = ['gpt-3.5-turbo', 'gpt-4o', 'gpt-4-turbo'];
     }
     
     // Model preference order for summary generation
-    const modelPreference = ['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo'];
+    const modelPreference = ['gpt-3.5-turbo', 'gpt-4o', 'gpt-4-turbo'];
     
     // Select best available model using our helper function
     const selectedModel = selectBestAvailableModel(modelPreference[0], availableModels);

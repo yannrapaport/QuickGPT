@@ -1391,10 +1391,10 @@
                         throw new Error('Failed to fetch models');
                     }
                     const data = await response.json();
-                    return data.models || ['gpt-4o', 'gpt-3.5-turbo'];
+                    return data.models || ['gpt-3.5-turbo', 'gpt-4o'];
                 } catch (error) {
                     console.error('Error fetching models:', error);
-                    return ['gpt-4o', 'gpt-3.5-turbo']; // Fallback to default models
+                    return ['gpt-3.5-turbo', 'gpt-4o']; // Fallback to default models
                 }
             }
             
