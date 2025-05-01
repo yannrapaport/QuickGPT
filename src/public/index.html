@@ -1279,7 +1279,7 @@
             
             let currentQuestion = '';
             let currentResponse = '';
-            let currentModel = localStorage.getItem('quickgpt-model') || 'gpt-4o'; // Default model with localStorage preference
+            let currentModel = localStorage.getItem('quickgpt-model') || 'gpt-3.5-turbo'; // Default model with localStorage preference
             let currentTheme = localStorage.getItem('quickgpt-theme') || 'light'; // Default theme
             let conversationStarted = false; // Track if conversation has started to show bottom separator
             
@@ -1406,7 +1406,7 @@
                     console.log('Available models:', availableModels);
                     
                     // Define the model priority order
-                    const modelPriority = ['gpt-4.1', 'gpt-4o', 'gpt-4-turbo', 'gpt-4', 'gpt-3.5-turbo'];
+                    const modelPriority = ['gpt-3.5-turbo', 'gpt-4.1', 'gpt-4o', 'gpt-4-turbo', 'gpt-4'];
                     
                     // Sort models based on priority
                     const sortedModels = availableModels.sort((a, b) => {
@@ -1468,10 +1468,10 @@
                 // Define model display data
                 const modelDisplayData = {
                     'gpt-4.1': {title: 'GPT-4.1', description: 'Latest and most capable model', badge: 'new'},
-                    'gpt-4o': {title: 'GPT-4o', description: 'Smart and balanced', badge: 'default'},
+                    'gpt-4o': {title: 'GPT-4o', description: 'Smart and balanced', badge: ''},
                     'gpt-4-turbo': {title: 'GPT-4 Turbo', description: 'Fast with strong reasoning', badge: ''},
                     'gpt-4': {title: 'GPT-4', description: 'Original GPT-4 model', badge: ''},
-                    'gpt-3.5-turbo': {title: 'GPT-3.5 Turbo', description: 'Fastest responses', badge: 'faster'}
+                    'gpt-3.5-turbo': {title: 'GPT-3.5 Turbo', description: 'Fastest responses', badge: 'default'}
                 };
                 
                 // Add options for each available model
