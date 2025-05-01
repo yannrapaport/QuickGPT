@@ -13,3 +13,24 @@ externalPort = 80
 [deployment]
 run = "npm install && npm start"
 deploymentTarget = "cloudrun"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "QuickGPT Server"
+
+[[workflows.workflow]]
+name = "QuickGPT Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node src/server.js"
+waitForPort = 5000
