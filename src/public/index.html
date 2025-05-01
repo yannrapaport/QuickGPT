@@ -156,6 +156,8 @@
             justify-content: space-between;
             align-items: center;
             position: relative;
+            z-index: 1000; /* Higher z-index to ensure header remains above content */
+            box-shadow: none; /* Remove any shadow that might be affected by scrolling */
         }
         
         .header-title {
@@ -233,7 +235,9 @@
         
         /* Header line styles - glows and is clickable - matching the separator line */
         .header-line {
-            position: relative;
+            position: absolute;
+            bottom: 0;
+            left: 0;
             height: 3px; /* Consistent 3px height for all glowing lines */
             background-color: var(--primary-color);
             width: 100%;
@@ -242,11 +246,22 @@
             z-index: 999;
             opacity: 0.8;
             box-shadow: 0 0 12px var(--primary-color); /* Consistent glow effect */
+            pointer-events: auto;
         }
         
         .header-line:hover {
             opacity: 1; /* Full opacity on hover */
             box-shadow: 0 0 15px var(--primary-color); /* Increased blur radius on hover */
+        }
+        
+        /* Added container to fix position of header line */
+        .header-line-container {
+            position: relative;
+            width: 100%;
+            height: 3px; /* Match header-line height */
+            z-index: 1001; /* Above chat-header z-index */
+            overflow: visible; /* Allow glow to extend beyond container */
+            background: transparent; /* Transparent background */
         }
         
         .header-controls {
@@ -1164,7 +1179,9 @@
         </div>
         
         <!-- Header line that glows and is clickable to open the info panel - active by default -->
-        <div class="header-line active" id="headerLine" title="Click for app info"></div>
+        <div class="header-line-container">
+            <div class="header-line active" id="headerLine" title="Click for app info"></div>
+        </div>
         
         <!-- Top drawer for app info - unified drawer component -->
         <div class="drawer drawer--top" id="infoDrawer">
